@@ -99,8 +99,8 @@ namespace Benchmark
 		executed = true;
 		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 		{
-			t["t1"]["t2"]["t3"]["value"] = i;
-			int v = t["t1"]["t2"]["t3"]["value"];
+			t["t1"]["value"] = i;
+			int v = t["t1"]["value"];
 			if (v != i) { throw std::logic_error(""); }
 		}
 	}
