@@ -45,12 +45,22 @@ target_include_directories(benchmark_sol2 PRIVATE binding_libs/sol2)
 target_link_libraries(benchmark_sol2 ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2)
 
-#cannot build with lua5.3.4
+#cannot build with lua5.3.4 
+option(ENABLE_LUACPPINTERFACE OFF)
+if(ENABLE_LUACPPINTERFACE)
+#luacppinterface's cmakelist is bad
+set(LUACPPINTERFACESRC
+	binding_libs/luacppinterface/LuaCppInterface/luacoroutine.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luareference.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luacppinterface.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luatable.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luafunction.cpp)
 #add_subdirectory(binding_libs/luacppinterface)
-#add_executable(benchmark_luacppinterface test/luacppinterface.cpp)
-#target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface)
-#target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES} luacppinterface)
-#set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luacppinterface)
+add_executable(benchmark_luacppinterface ${LUACPPINTERFACESRC} test/luacppinterface.cpp)
+target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface/LuaCppInterface)
+target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luacppinterface)
+endif(ENABLE_LUACPPINTERFACE)
 
 add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
 foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
