@@ -1,0 +1,57 @@
+cmake_minimum_required(VERSION 2.6)
+project(lua_binding_benchmark)
+
+include(cmake/FindLua.cmake)
+
+include_directories(${LUA_INCLUDE_DIRS})
+link_directories(${LUA_LIBRARY_DIRS})
+include_directories("include")
+
+include_directories("./")
+
+if(NOT MSVC)
+add_definitions("-std=c++11")
+endif(NOT MSVC)
+
+set(BENCHMARK_BINARIES "")
+
+
+add_executable(output_csv_title test/output_csv_title.cpp)
+target_link_libraries(output_csv_title ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} output_csv_title)
+
+add_executable(benchmark_plainapi test/plainapi.cpp)
+target_link_libraries(benchmark_plainapi ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_plainapi)
+
+
+add_executable(benchmark_kaguya test/kaguya.cpp)
+target_include_directories(benchmark_kaguya PRIVATE binding_libs/kaguya/include)
+target_link_libraries(benchmark_kaguya ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_kaguya)
+
+add_executable(benchmark_Selene test/selene.cpp)
+target_include_directories(benchmark_Selene PRIVATE binding_libs/Selene/include)
+target_link_libraries(benchmark_Selene ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_Selene)
+
+add_executable(benchmark_sol test/sol.cpp)
+target_include_directories(benchmark_sol PRIVATE binding_libs/sol)
+target_link_libraries(benchmark_sol ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol)
+
+#cannot build with lua5.3.4
+#add_subdirectory(binding_libs/luacppinterface)
+#add_executable(benchmark_luacppinterface test/luacppinterface.cpp)
+#target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface)
+#target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES} luacppinterface)
+#set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luacppinterface)
+
+add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
+foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
+add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
+endforeach(BENCHMARK_BINARY)
+add_custom_command(TARGET execute_benchmark POST_BUILD 
+          COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result.csv)
+          
+    

@@ -1,0 +1,57 @@
+<html>
+<head>
+ <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+</head>
+<body>
+<div style="margin:20px 10px; padding:0; width:800px; height:350px;" id="performanceGraph"></div>
+<script type="text/javascript">
+
+// from https://gist.github.com/tigawa/8858345
+function csv2Array(filePath) {
+	var csvData = [];
+	var data = new XMLHttpRequest();	
+	data.open("GET", filePath, false);
+	data.send(null);
+	var LF = String.fromCharCode(10); 
+	var lines = data.responseText.split(LF);
+	for (var i = 0; i < lines.length;++i) {
+		var cells = lines[i].split(",");
+		if( cells.length != 1 ) {
+               if(i==0)
+               {
+			         csvData.push(cells);
+               }
+               else
+               {
+                 var col = [];
+                 col.push(cells[0]);
+	            for (var c = 1; c < cells.length;++c) {
+               {
+                 col.push(Number(cells[c]));
+               }
+               }
+			 csvData.push(col);
+           }
+		}
+	}
+	return csvData;
+}
+
+google.load('visualization', '1.0', {'packages':['corechart']});
+google.setOnLoadCallback(function(){
+  var data = google.visualization.arrayToDataTable(csv2Array('result.csv'));
+  var options = {
+    title: 'Graph ',
+    chartArea: {'width':'70%', 'height':'65%', 'left':65 },
+    hAxis: { title:'Times (ms)', titleTextStyle:{italic:false} },
+    vAxis: { title:'Library',  titleTextStyle:{italic:false} },
+    crosshair: { trigger: 'both' }
+  };
+  var chart = new google.visualization.BarChart(document.getElementById('performanceGraph'));
+  chart.draw(data, options);
+});
+
+
+</script>
+</body>
+</html>

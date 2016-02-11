@@ -1,0 +1,12 @@
+[submodule "binding_libs/kaguya"]
+	path = binding_libs/kaguya
+	url = https://github.com/satoren/kaguya.git
+[submodule "binding_libs/Selene"]
+	path = binding_libs/Selene
+	url = https://github.com/jeremyong/Selene.git
+[submodule "binding_libs/sol"]
+	path = binding_libs/sol
+	url = https://github.com/Rapptz/sol.git
+[submodule "binding_libs/luacppinterface"]
+	path = binding_libs/luacppinterface
+	url = https://github.com/davidsiaw/luacppinterface.git
