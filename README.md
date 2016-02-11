@@ -8,8 +8,8 @@ http://satoren.github.io/lua_binding_benchmark/
 ```C++
 		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 		{
-			t["value"] = i;
-			int v = t["value"];
+			globaltable["value"] = i;
+			int v = globaltable["value"];
 			if (v != i) { throw std::logic_error(""); }
 		}
 ```
@@ -17,8 +17,8 @@ http://satoren.github.io/lua_binding_benchmark/
 ```C++
 		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 		{
-			t["t1"]["value"] = i;
-			int v = t["t1"]["value"];
+			table["t1"]["value"] = i;
+			int v = table["t1"]["value"];
 			if (v != i) { throw std::logic_error(""); }
 		}
 ```
