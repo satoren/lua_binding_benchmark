@@ -13,12 +13,52 @@ const char* binding_name()
 	return "plain api";
 }
 
+
+
 struct GlobalTable
 {
 	lua_State *state_;
 	const char* current_key;
-	GlobalTable(lua_State *state):state_(state), current_key(0){}
+	GlobalTable(lua_State *state) :state_(state), current_key(0) {}
 	GlobalTable& operator[](const char* key)
+	{
+		current_key = key;
+		return *this;
+	}
+
+	int operator=(int value)
+	{
+		lua_pushnumber(state_, value);
+		lua_setglobal(state_, current_key);
+		current_key = 0;
+		return value;
+	}
+	operator int()
+	{
+		lua_getglobal(state_,  current_key);
+		int v = static_cast<int>(lua_tonumber(state_, -1));
+		lua_settop(state_, 0);
+		current_key = 0;
+		return v;
+	}
+};
+void binding_global_table()
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+
+	GlobalTable t(state);
+	Benchmark::global_table(t);
+	lua_close(state);
+}
+
+
+
+struct TableChain
+{
+	lua_State *state_;
+	const char* current_key;
+	TableChain(lua_State *state) :state_(state), current_key(0) {}
+	TableChain& operator[](const char* key)
 	{
 		if (current_key == 0)
 		{
@@ -34,7 +74,7 @@ struct GlobalTable
 
 	int operator=(int value)
 	{
-		lua_pushnumber(state_,value);
+		lua_pushnumber(state_, value);
 		lua_setfield(state_, -2, current_key);
 		lua_settop(state_, 0);
 		current_key = 0;
@@ -43,26 +83,17 @@ struct GlobalTable
 	operator int()
 	{
 		lua_getfield(state_, -1, current_key);
-		int v= static_cast<int>(lua_tonumber(state_, -1));
+		int v = static_cast<int>(lua_tonumber(state_, -1));
 		lua_settop(state_, 0);
 		current_key = 0;
 		return v;
 	}
 };
-
-void binding_global_table()
-{
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-
-	GlobalTable t(state);
-	Benchmark::global_table(t);
-	lua_close(state);
-}
 void binding_table_chain()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
 	luaL_dostring(state,"t1={t2={t3={}}}");
-	GlobalTable t(state);
+	TableChain t(state);
 	Benchmark::table_chain_access(t);
 	lua_close(state);
 }
