@@ -10,3 +10,6 @@
 [submodule "binding_libs/luacppinterface"]
 	path = binding_libs/luacppinterface
 	url = https://github.com/davidsiaw/luacppinterface.git
+[submodule "binding_libs/sol2"]
+	path = binding_libs/sol2
+	url = https://github.com/ThePhD/sol2.git
