@@ -40,6 +40,11 @@ target_include_directories(benchmark_sol PRIVATE binding_libs/sol)
 target_link_libraries(benchmark_sol ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol)
 
+add_executable(benchmark_sol2 test/sol2.cpp)
+target_include_directories(benchmark_sol2 PRIVATE binding_libs/sol2)
+target_link_libraries(benchmark_sol2 ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2)
+
 #cannot build with lua5.3.4
 #add_subdirectory(binding_libs/luacppinterface)
 #add_executable(benchmark_luacppinterface test/luacppinterface.cpp)
