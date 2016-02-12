@@ -50,7 +50,7 @@ http://satoren.github.io/lua_binding_benchmark/
 ```
 
 
-* native function
+* C++ object member call
 ```C++
 //C++ class
 	class SetGet
