@@ -1,8 +1,8 @@
-Library,global table,table chain,native function,object member set get
-plain api,58.67,143.776,43.655,0
-kaguya,101.916,179.041,65.487,243.29
-Selene,470.584,1005.01,62.352,290.174
-sol,89.05,0,50.999,408.783
-sol2,55.874,772.578,51.608,411.111
-lua-intf,192.017,230.536,51.829,471.985
-luacppinterface,83.906,1177.29,123.054,191.104
+Library,global table,table chain,c function call,lua function call,C++ object member call
+plain api,63.613,119.414,48.421,86.899,0
+kaguya,99.078,181.412,70.2,107.216,247.539
+Selene,493.385,1064.94,61.784,376.48,281.893
+sol,89.909,0,52.01,0,426.926
+sol2,58.348,714.838,53.233,0,436.647
+lua-intf,199.553,243.385,52.598,0,436.894
+luacppinterface,83.996,1213.39,129.323,0,198.33

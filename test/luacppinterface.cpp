@@ -101,6 +101,11 @@ void binding_native_function_call()
 	lua.RunScript(Benchmark::native_function_lua_code());
 }
 
+
+void binding_lua_function_call()
+{
+}
+
 void binding_object_set_get()
 {
 

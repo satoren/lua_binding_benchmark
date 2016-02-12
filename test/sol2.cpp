@@ -35,9 +35,11 @@ void binding_native_function_call()
 
 void binding_lua_function_call()
 {
-	sol::state state;
-	state.script(Benchmark::register_lua_function_lua_code());
 	//crashed
+	//terminate called after throwing an instance of 'sol::error'
+	//what():  lua: error: stack overflow
+//	sol::state state;
+//	state.script(Benchmark::register_lua_function_lua_code());
 //	sol::function f = state[Benchmark::lua_function_name()];
 //	Benchmark::lua_function_call(f);
 }

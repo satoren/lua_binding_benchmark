@@ -130,7 +130,7 @@ struct FunctionWrap
 	{
 		lua_rawgeti(state_, LUA_REGISTRYINDEX, ref_);
 		lua_pushstring(state_,v.c_str());
-		lua_call(state_, 1, 1, 0);
+		lua_pcall(state_, 1, 1, 0);
 		std::string result{lua_tostring(state_,-1)};
 		lua_settop(state_,0);
 		return result;
