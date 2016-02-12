@@ -42,8 +42,8 @@ google.setOnLoadCallback(function(){
   var data = google.visualization.arrayToDataTable(csv2Array('result.csv'));
   var options = {
     title: 'Graph ',
-    chartArea: {'width':'70%', 'height':'65%', 'left':65 },
-    hAxis: { title:'Times (ms)', titleTextStyle:{italic:false} },
+    chartArea: {'width':'70%', 'height':'65%', 'left':125 },
+    hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
     vAxis: { title:'Library',  titleTextStyle:{italic:false} },
     crosshair: { trigger: 'both' }
   };

@@ -1,5 +1,12 @@
 #include "../benchmark.hpp"
+
+
+#if LUA_VERSION_NUM > 502
+#define lua_tounsigned lua_tointeger
+#endif
+
 #include "sol.hpp"
+
 
 void binding_begin()
 {   
