@@ -13,3 +13,6 @@
 [submodule "binding_libs/sol2"]
 	path = binding_libs/sol2
 	url = https://github.com/ThePhD/sol2.git
+[submodule "binding_libs/lua-intf"]
+	path = binding_libs/lua-intf
+	url = https://github.com/SteveKChiu/lua-intf.git

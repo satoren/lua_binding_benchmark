@@ -1,5 +1,5 @@
 build*
-lua-*
+lua-5*
 *.exe
 *.dll
 LuaJIT-*

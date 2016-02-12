@@ -1,0 +1,19 @@
+version: 1.0.{build}
+os:
+- Visual Studio 2015
+configuration:
+- Release
+install:
+- ps: >-
+    if(!(Test-Path -Path lua-5.3.2 )){
+      choco install 7zip.commandline
+      Invoke-WebRequest  http://www.lua.org/ftp/lua-5.3.2.tar.gz -OutFile lua-5.3.2.tar.gz
+      7z x lua-5.3.2.tar.gz
+      7z x lua-5.3.2.tar
+    }
+cache: lua-5.3.2
+before_build:
+- cmd: cmake ./
+build:
+  project: lua_binding_benchmark.sln
+  verbosity: minimal
