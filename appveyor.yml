@@ -13,7 +13,10 @@ install:
     }
 cache: lua-5.3.2
 before_build:
-- cmd: cmake ./
+- cmd: >-
+    git submodule init
+    git submodule update
+    cmake ./
 build:
   project: lua_binding_benchmark.sln
   verbosity: minimal

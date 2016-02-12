@@ -10,7 +10,8 @@ install:
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r-test
+     - llvm-toolchain-precise
+     - ubuntu-toolchain-r-test
     packages:
     - liblua5.2-dev
     - libboost-all-dev
