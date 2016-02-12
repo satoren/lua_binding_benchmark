@@ -4,11 +4,11 @@ language: cpp
 compiler:
   - g++
 install:
-    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
 addons:
   apt:
     sources:
-     - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
     - liblua5.2-dev
     - libboost-all-dev
