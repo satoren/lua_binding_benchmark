@@ -15,6 +15,11 @@ endif(NOT MSVC)
 
 set(BENCHMARK_BINARIES "")
 
+if (${CMAKE_VERSION} VERSION_LESS 2.8.12) 
+function(target_include_directories)
+  include_directories(${ARGV})
+endfunction(target_include_directories)
+endif()
 
 add_executable(output_csv_title test/output_csv_title.cpp)
 target_link_libraries(output_csv_title ${LUA_LIBRARIES})
