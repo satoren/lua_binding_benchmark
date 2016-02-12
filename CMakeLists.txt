@@ -17,7 +17,7 @@ set(BENCHMARK_BINARIES "")
 
 if (${CMAKE_VERSION} VERSION_LESS 2.8.12) 
 function(target_include_directories)
-  include_directories(${ARGV})
+  include_directories(BEFORE ${ARGV})
 endfunction(target_include_directories)
 endif()
 
