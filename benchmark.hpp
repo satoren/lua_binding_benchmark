@@ -150,6 +150,27 @@ namespace Benchmark
 			"end\n"
 			"end\n";
 	}
+
+	const char* register_lua_function_lua_code()
+	{
+		return "lua_function=function(i)return i;end";
+	}
+	const char* lua_function_name()
+	{
+		return "lua_function";
+	}
+
+	template<typename F>
+	void lua_function_call(F& f)
+	{
+		executed = true;
+		std::string teststring = "testtext";
+		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
+		{
+			std::string result = f(teststring);
+			if (result != teststring) { throw std::logic_error(""); }
+		}
+	}
 }
 
 void binding_begin();
@@ -161,6 +182,7 @@ void binding_global_table();
 void binding_table_chain();
 void binding_native_function_call();
 void binding_object_set_get();
+void binding_lua_function_call();
 
 int main(int argc, const char* argv[])
 {
@@ -171,8 +193,9 @@ int main(int argc, const char* argv[])
 
 	Benchmark::execute_benchmark("global table", &binding_global_table);
 	Benchmark::execute_benchmark("table chain", &binding_table_chain);
-	Benchmark::execute_benchmark("native function", &binding_native_function_call);
-	Benchmark::execute_benchmark("object member set get", &binding_object_set_get);
+	Benchmark::execute_benchmark("c function call", &binding_native_function_call);
+	Benchmark::execute_benchmark("lua function call", &binding_lua_function_call);
+	Benchmark::execute_benchmark("C++ object member call", &binding_object_set_get);
 
 	Benchmark::out << std::endl;
 	std::cout << std::endl;

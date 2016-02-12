@@ -33,6 +33,14 @@ void binding_table_chain()
 //	Benchmark::table_chain_access(state);
 }
 
+void binding_lua_function_call()
+{
+//	sol::state state;
+//	state.script(Benchmark::register_lua_function_lua_code());
+
+//	sol::function f = state[Benchmark::lua_function_name()];
+//	Benchmark::lua_function_call(f);
+}
 void binding_native_function_call()
 {
 	sol::state state;

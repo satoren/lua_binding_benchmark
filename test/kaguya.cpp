@@ -32,6 +32,14 @@ void binding_native_function_call()
 	state(Benchmark::native_function_lua_code());
 }
 
+void binding_lua_function_call()
+{
+	kaguya::State state;
+	state(Benchmark::register_lua_function_lua_code());
+	kaguya::LuaFunction f = state[Benchmark::lua_function_name()];
+	Benchmark::lua_function_call(f);
+}
+
 void binding_object_set_get()
 {
 	kaguya::State state;

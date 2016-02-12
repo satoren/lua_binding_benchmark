@@ -114,6 +114,39 @@ void binding_native_function_call()
 	lua_setglobal(state, "native_function");
 
 	luaL_dostring(state,Benchmark::native_function_lua_code());
+	lua_close(state);
+}
+
+struct FunctionWrap
+{
+	lua_State *state_;
+	int ref_;
+
+	FunctionWrap(lua_State *state, int ref) :state_(state), ref_(ref)
+	{
+	}
+
+	std::string operator()(const std::string& v)
+	{
+		lua_rawgeti(state_, LUA_REGISTRYINDEX, ref_);
+		lua_pushstring(state_,v.c_str());
+		lua_call(state_, 1, 1, 0);
+		std::string result{lua_tostring(state_,-1)};
+		lua_settop(state_,0);
+		return result;
+	}
+};
+
+void binding_lua_function_call()
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	luaL_dostring(state, Benchmark::register_lua_function_lua_code());
+
+	lua_getglobal(state, Benchmark::lua_function_name());
+	FunctionWrap f(state, luaL_ref(state, LUA_REGISTRYINDEX));
+	Benchmark::lua_function_call(f);
+
+	lua_close(state);
 }
 void binding_object_set_get()
 {

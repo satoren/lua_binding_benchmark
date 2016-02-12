@@ -71,6 +71,29 @@ void binding_native_function_call()
 }
 
 
+struct FunctionWrap
+{
+	LuaIntf::LuaRef f_;
+	FunctionWrap(LuaIntf::LuaRef f) :f_(f)
+	{
+	}
+
+	std::string operator()(const std::string& v)
+	{
+		return f_.call<std::string>(v);
+	}
+};
+
+void binding_lua_function_call()
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	luaL_dostring(state, Benchmark::register_lua_function_lua_code());
+	LuaIntf::LuaRef f(state, Benchmark::lua_function_name());
+	Benchmark::lua_function_call(FunctionWrap(f));
+
+	lua_close(state);
+}
+
 void binding_object_set_get()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
