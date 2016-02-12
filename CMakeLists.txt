@@ -50,6 +50,13 @@ target_include_directories(benchmark_sol2 PRIVATE binding_libs/sol2)
 target_link_libraries(benchmark_sol2 ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2)
 
+
+add_executable(benchmark_lua-intf test/lua-intf.cpp)
+target_include_directories(benchmark_lua-intf PRIVATE binding_libs/lua-intf)
+target_link_libraries(benchmark_lua-intf ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_lua-intf)
+
+
 #cannot build with lua5.3.4 
 option(ENABLE_LUACPPINTERFACE OFF)
 if(ENABLE_LUACPPINTERFACE)
