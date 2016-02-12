@@ -1,47 +1,64 @@
 <html>
 <head>
- <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 <div style="margin:20px 10px; padding:0; width:800px; height:350px;" id="performanceGraph"></div>
+
+<div style="margin:20px 10px; padding:0; width:800px; height:350px;" id="performanceTable"></div>
 <script type="text/javascript">
 
 // from https://gist.github.com/tigawa/8858345
 function csv2Array(filePath) {
-	var csvData = [];
-	var data = new XMLHttpRequest();	
+	var csvData = new Array();
+	var data = new XMLHttpRequest();
 	data.open("GET", filePath, false);
 	data.send(null);
-	var LF = String.fromCharCode(10); 
+
+	var LF = String.fromCharCode(10);
 	var lines = data.responseText.split(LF);
 	for (var i = 0; i < lines.length;++i) {
 		var cells = lines[i].split(",");
 		if( cells.length != 1 ) {
-               if(i==0)
-               {
-			         csvData.push(cells);
-               }
-               else
-               {
-                 var col = [];
-                 col.push(cells[0]);
-	            for (var c = 1; c < cells.length;++c) {
-               {
-                 col.push(Number(cells[c]));
-               }
-               }
-			 csvData.push(col);
-           }
+			csvData.push(cells);
 		}
 	}
 	return csvData;
 }
 
-google.load('visualization', '1.0', {'packages':['corechart']});
-google.setOnLoadCallback(function(){
-  var data = google.visualization.arrayToDataTable(csv2Array('result.csv'));
+  var resultdata = csv2Array('result.csv');
+
+function to_barchart_data(arraydata)
+{
+  var r =[];
+	for (var i = 0; i < arraydata.length;++i) {
+    if(i == 0)
+    {// title
+      r.push(arraydata[i]);
+    }
+    else {
+      var c = []
+       c.push(arraydata[i][0])
+  	   for (var col = 1; col < arraydata[i].length;++col) {
+         var n = Number(arraydata[i][col])
+         if (n == 0)
+         {
+          c.push(null)
+         }
+         else {
+         c.push(n)
+         }
+      }
+        r.push(c);
+    }
+	}
+  return r;
+}
+google.charts.load("current", {packages: ['corechart','table']});
+google.charts.setOnLoadCallback(function(){
+  var data = google.visualization.arrayToDataTable(to_barchart_data(resultdata));
   var options = {
-    title: 'Graph ',
+    title: 'Graph',
     chartArea: {'width':'70%', 'height':'65%', 'left':125 },
     hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
     vAxis: { title:'Library',  titleTextStyle:{italic:false} },
@@ -49,6 +66,9 @@ google.setOnLoadCallback(function(){
   };
   var chart = new google.visualization.BarChart(document.getElementById('performanceGraph'));
   chart.draw(data, options);
+
+    var table = new google.visualization.Table(document.getElementById('performanceTable'));
+    table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 });
 
 

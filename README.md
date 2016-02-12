@@ -1,13 +1,14 @@
-# lua_binding_benchmark
+# benchmark for lua binding library
 
 work in progress...
+
+http://satoren.github.io/lua_binding_benchmark/
 
 If library has not supported feature,I wrote the wrap class.
 It might not be an appropriate use for each library. please to PR if you know a better way.
 
 It is also good with the addition of another library benchmark.
 
-http://satoren.github.io/lua_binding_benchmark/
 ##benchmark code
 * global table
 ```C++
