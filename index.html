@@ -3,9 +3,13 @@
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
-<div style="margin:20px 10px; padding:0; width:800px; height:350px;" id="performanceGraph"></div>
+<div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceGraph"></div>
 
-<div style="margin:20px 10px; padding:0; width:800px; height:350px;" id="performanceTable"></div>
+<div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceTable"></div>
+
+<div style="margin:20px 10px; padding:0; width:90%; height:350px;" id="systemInfo"></div>
+
+
 <script type="text/javascript">
 
 // from https://gist.github.com/tigawa/8858345
@@ -25,7 +29,21 @@ function csv2Array(filePath) {
 	}
 	return csvData;
 }
+function systemInfoText()
+{
+var data = new XMLHttpRequest();
+data.open("GET", 'result_system_info.txt', false);
+data.send(null);
+var text ="";
+var LF = String.fromCharCode(10);
+var lines = data.responseText.split(LF);
+for (var i = 0; i < lines.length;++i) {
+  text+= lines[i]+"<BR>"
+}
+return text
+}
 
+document.getElementById("systemInfo").innerHTML = systemInfoText();
   var resultdata = csv2Array('result.csv');
 
 function to_barchart_data(arraydata)
@@ -59,7 +77,7 @@ google.charts.setOnLoadCallback(function(){
   var data = google.visualization.arrayToDataTable(to_barchart_data(resultdata));
   var options = {
     title: 'Graph',
-    chartArea: {'width':'70%', 'height':'65%', 'left':125 },
+    chartArea: {'width':'70%', 'height':'65%', 'left':150 },
     hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
     vAxis: { title:'Library',  titleTextStyle:{italic:false} },
     crosshair: { trigger: 'both' }
