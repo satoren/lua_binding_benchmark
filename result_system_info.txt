@@ -1,0 +1,14 @@
+----system info---
+Linux ubuntu 4.2.0-25-generic #30-Ubuntu SMP Mon Jan 18 12:31:50 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+
+----cpu info---
+vendor_id	: GenuineIntel
+model name	: Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz
+cpu MHz		: 3192.604
+
+----compiler version---
+c++ (Ubuntu 5.2.1-22ubuntu2) 5.2.1 20151010
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
