@@ -58,8 +58,8 @@ set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_lua-intf)
 
 
 #cannot build with lua5.3.4 
-option(ENABLE_LUACPPINTERFACE OFF)
-if(ENABLE_LUACPPINTERFACE)
+option(DISABLE_LUACPPINTERFACE OFF)
+if(NOT DISABLE_LUACPPINTERFACE)
 #luacppinterface's cmakelist is bad
 set(LUACPPINTERFACESRC
 	binding_libs/luacppinterface/LuaCppInterface/luacoroutine.cpp
@@ -72,7 +72,7 @@ add_executable(benchmark_luacppinterface ${LUACPPINTERFACESRC} test/luacppinterf
 target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface/LuaCppInterface)
 target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luacppinterface)
-endif(ENABLE_LUACPPINTERFACE)
+endif(NOT DISABLE_LUACPPINTERFACE)
 
 add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
 foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})

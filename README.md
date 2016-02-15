@@ -10,11 +10,17 @@ It might not be an appropriate use for each library. please to PR if you know a 
 It is also good with the addition of another library benchmark.
 
 ##execute benchmark
+
+```
+git submodule init
+git submodule update
+```
+
 on Linux
 ```
 mkdir build
 cd build
-cmake ../
+cmake ../ -DCMAKE_BUILD_TYPE=Release
 make execute_benchmark
 ```
 
@@ -22,7 +28,7 @@ on Windows
 ```
 mkdir build
 cd build
-cmake ../
+cmake ../ -DCMAKE_BUILD_TYPE=Release
 ```
 open build/lua_binding_benchmark.sln and build 'execute_benchmark' project
 
