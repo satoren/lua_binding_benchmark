@@ -1,5 +1,5 @@
 ----system info---
-Linux ubuntu 4.2.0-25-generic #30-Ubuntu SMP Mon Jan 18 12:31:50 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+Linux ubuntu 4.2.0-27-generic #32-Ubuntu SMP Fri Jan 22 04:49:08 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
 
 ----cpu info---
 vendor_id	: GenuineIntel
