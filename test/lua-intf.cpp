@@ -50,24 +50,33 @@ struct LuaTableWrap
 void binding_global_table()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
 	LuaTableWrap table(LuaIntf::LuaRef(state, "_G"));
 	Benchmark::global_table(table);
+	}
+	lua_close(state);
 }
 
 void binding_table_chain()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
 	LuaTableWrap table(LuaIntf::LuaRef(state, "_G"));
 	luaL_dostring(state,"t1={t2={t3={}}}");
 	Benchmark::table_chain_access(table);
+	}
+	lua_close(state);
 }
 
 void binding_native_function_call()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
 	LuaIntf::LuaRef global_table(state, "_G");
 	global_table.set("native_function",&Benchmark::native_function);
 	luaL_dostring(state, Benchmark::native_function_lua_code());
+	}
+	lua_close(state);
 }
 
 
@@ -86,27 +95,29 @@ struct FunctionWrap
 
 void binding_lua_function_call()
 {
-//unknown crash at gcc version 5.2.1 20151010 (Ubuntu 5.2.1-22ubuntu2)
-//	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-//	luaL_dostring(state, Benchmark::register_lua_function_lua_code());
-//	LuaIntf::LuaRef f(state, Benchmark::lua_function_name());
-//	FunctionWrap fwrap(f);
-//	Benchmark::lua_function_call(fwrap);
-
-//	lua_close(state);
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		luaL_dostring(state, Benchmark::register_lua_function_lua_code());
+		LuaIntf::LuaRef f(state, Benchmark::lua_function_name());
+		FunctionWrap fwrap(f);
+		Benchmark::lua_function_call(fwrap);
+	}
+	lua_close(state);
 }
 
 void binding_object_set_get()
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-	LuaIntf::LuaBinding(state)
+	{
+		LuaIntf::LuaBinding(state)
 		.beginClass<Benchmark::SetGet>("SetGet")
 		.addConstructor(LUA_ARGS())
 		.addFunction("set", &Benchmark::SetGet::set)
 		.addFunction("get", &Benchmark::SetGet::get)
 		.endClass();
 
-
-	luaL_dostring(state, "getset = SetGet()");
-	luaL_dostring(state, Benchmark::object_set_get_lua_code());
+		luaL_dostring(state, "getset = SetGet()");
+		luaL_dostring(state, Benchmark::object_set_get_lua_code());
+	}
+	lua_close(state);
 }
