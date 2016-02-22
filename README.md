@@ -52,7 +52,7 @@ open build/lua_binding_benchmark.sln and build 'execute_benchmark' project
 		}
 ```
 
-* native function
+* c function call
 ```C++
   // cfunction
 	int native_function(int arg)
@@ -73,6 +73,20 @@ open build/lua_binding_benchmark.sln and build 'execute_benchmark' project
 	end
 ```
 
+
+* lua function call
+```lua
+lua_function=function(i)return i;end
+
+```
+```C++
+		std::string teststring = "testtext";
+		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
+		{
+			std::string result = f(teststring);
+			if (result != teststring) { throw std::logic_error(""); }
+		}
+```
 
 * C++ object member call
 ```C++
