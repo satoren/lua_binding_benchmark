@@ -3,10 +3,8 @@ project(lua_binding_benchmark)
 
 include(cmake/FindLua.cmake)
 
-include_directories(${LUA_INCLUDE_DIRS})
 link_directories(${LUA_LIBRARY_DIRS})
-include_directories("include")
-
+include_directories(${LUA_INCLUDE_DIRS})
 include_directories("./")
 
 if(NOT MSVC)
@@ -16,8 +14,11 @@ endif(NOT MSVC)
 set(BENCHMARK_BINARIES "")
 
 if (${CMAKE_VERSION} VERSION_LESS 2.8.12) 
-function(target_include_directories)
-  include_directories(BEFORE ${ARGV})
+function(target_include_directories target mode dirs)
+set_property(TARGET ${target} PROPERTY INCLUDE_DIRECTORIES "")
+include_directories(${LUA_INCLUDE_DIRS})
+include_directories("./")
+  include_directories(${dirs})
 endfunction(target_include_directories)
 endif()
 

@@ -33,13 +33,28 @@ void binding_table_chain()
 //	Benchmark::table_chain_access(state);
 }
 
+struct FunctionWrap
+{
+	sol::function f_;
+	FunctionWrap(sol::function f) :f_(f)
+	{
+	}
+
+	std::string operator()(const std::string& v)
+	{
+		return f_.call<std::string>(v);
+	}
+};
+
+
 void binding_lua_function_call()
 {
-//	sol::state state;
-//	state.script(Benchmark::register_lua_function_lua_code());
+	sol::state state;
+	state.script(Benchmark::register_lua_function_lua_code());
 
-//	sol::function f = state[Benchmark::lua_function_name()];
-//	Benchmark::lua_function_call(f);
+	sol::function f = state["lua_function"];
+	FunctionWrap fwrap(f);
+	Benchmark::lua_function_call(fwrap);
 }
 void binding_native_function_call()
 {
