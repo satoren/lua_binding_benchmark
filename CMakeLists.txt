@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 project(lua_binding_benchmark)
 
 include(cmake/FindLua.cmake)
@@ -12,16 +12,6 @@ add_definitions("-std=c++1y")
 endif(NOT MSVC)
 
 set(BENCHMARK_BINARIES "")
-
-if (${CMAKE_VERSION} VERSION_LESS 2.8.12) 
-function(target_include_directories target mode dirs)
-set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES "")
-set_property(TARGET ${target} PROPERTY INCLUDE_DIRECTORIES "")
-include_directories(${LUA_INCLUDE_DIRS})
-include_directories("./")
-  include_directories(${dirs})
-endfunction(target_include_directories)
-endif()
 
 add_executable(output_csv_title test/output_csv_title.cpp)
 target_link_libraries(output_csv_title ${LUA_LIBRARIES})
