@@ -11,6 +11,7 @@ extern "C" {
 #include <iostream>
 
 #include <algorithm>
+#include <stdexcept>
 
 
 constexpr int BENCHMARK_LOOP_COUNT = 1000000;
