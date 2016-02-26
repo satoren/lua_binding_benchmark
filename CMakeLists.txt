@@ -15,6 +15,7 @@ set(BENCHMARK_BINARIES "")
 
 if (${CMAKE_VERSION} VERSION_LESS 2.8.12) 
 function(target_include_directories target mode dirs)
+set_property(DIRECTORY . PROPERTY INCLUDE_DIRECTORIES "")
 set_property(TARGET ${target} PROPERTY INCLUDE_DIRECTORIES "")
 include_directories(${LUA_INCLUDE_DIRS})
 include_directories("./")
