@@ -4,7 +4,7 @@ language: cpp
 compiler:
   - g++
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
 addons:
   apt:
     sources:
@@ -12,7 +12,7 @@ addons:
     packages:
     - liblua5.2-dev
     - libboost-all-dev
-    - g++-4.8
+    - g++-4.9
     - cmake
 env:
   - BUILD_TYPE=Release

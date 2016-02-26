@@ -10,7 +10,7 @@ include_directories("include")
 include_directories("./")
 
 if(NOT MSVC)
-add_definitions("-std=c++14")
+add_definitions("-std=c++1y")
 endif(NOT MSVC)
 
 set(BENCHMARK_BINARIES "")
