@@ -148,6 +148,54 @@ void binding_lua_function_call()
 
 	lua_close(state);
 }
+
+
+int setget_new(lua_State* L)
+{
+	void* ptr = lua_newuserdata(L, sizeof(Benchmark::SetGet));
+	new(ptr) Benchmark::SetGet();
+	luaL_setmetatable(L, "SetGet");
+	return 1;
+}
+int setget_set(lua_State* L)
+{
+	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
+	setget->set(lua_tonumber(L,2));
+	return 0;
+}
+int setget_get(lua_State* L)
+{
+	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
+	lua_pushnumber(L, setget->get());
+	return 1;
+}
+
 void binding_object_set_get()
 {
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+
+	luaL_newmetatable(state,"SetGet");
+	luaL_Reg funcs[] = 
+	{
+		{ "new",setget_new },
+		{ 0 ,0 },
+	};
+	luaL_setfuncs(state, funcs, 0);
+	lua_newtable(state);
+	luaL_Reg indexfuncs[] =
+	{
+		{ "set",setget_set },
+		{ "get",setget_get },
+		{ 0 ,0 },
+	};
+	luaL_setfuncs(state, indexfuncs, 0);
+	lua_setfield(state,-2,"__index");
+
+
+	lua_setglobal(state, "SetGet");
+
+	luaL_dostring(state,"getset = SetGet.new()");
+	luaL_dostring(state,Benchmark::object_set_get_lua_code());
+
+	lua_close(state);
 }
