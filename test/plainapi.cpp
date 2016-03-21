@@ -150,11 +150,24 @@ void binding_lua_function_call()
 }
 
 
+
+//not available luaL_setmetatable and luaL_setfuncs at Lua5.1
+void setmetatable(lua_State *L, const char *tname) {
+	luaL_getmetatable(L, tname);
+	lua_setmetatable(L, -2);
+}
+void setfuncs(lua_State *L, const luaL_Reg *l) {
+	for (; l->name != 0; l++) {
+		lua_pushcclosure(L, l->func, 0);
+		lua_setfield(L, -2, l->name);
+	}
+}
+
 int setget_new(lua_State* L)
 {
 	void* ptr = lua_newuserdata(L, sizeof(Benchmark::SetGet));
 	new(ptr) Benchmark::SetGet();
-	luaL_setmetatable(L, "SetGet");
+	setmetatable(L, "SetGet");
 	return 1;
 }
 int setget_set(lua_State* L)
@@ -180,7 +193,7 @@ void binding_object_set_get()
 		{ "new",setget_new },
 		{ 0 ,0 },
 	};
-	luaL_setfuncs(state, funcs, 0);
+	setfuncs(state, funcs);
 	lua_newtable(state);
 	luaL_Reg indexfuncs[] =
 	{
@@ -188,7 +201,7 @@ void binding_object_set_get()
 		{ "get",setget_get },
 		{ 0 ,0 },
 	};
-	luaL_setfuncs(state, indexfuncs, 0);
+	setfuncs(state, indexfuncs);
 	lua_setfield(state,-2,"__index");
 
 
