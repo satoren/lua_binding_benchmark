@@ -9,6 +9,8 @@ It might not be an appropriate use for each library. please to PR if you know a 
 
 It is also good with the addition of another library benchmark.
 
+[![Build Status](https://travis-ci.org/satoren/lua_binding_benchmark.svg?branch=master)](https://travis-ci.org/satoren/lua_binding_benchmark)
+
 ##execute benchmark
 
 ```
