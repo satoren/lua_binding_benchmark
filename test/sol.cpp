@@ -29,8 +29,16 @@ void binding_table_chain()
 {
 	sol::state state;
 	state.script("t1={t2={t3={}}}");
-	//sol is unsupported state["t1"]["t2"]["t3"] = value;
-//	Benchmark::table_chain_access(state);
+	// Adding the test here to just have comparison numbers up anyways
+	executed = true;
+	for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
+	{
+		sol::table t1s = state["t1"];
+		t1s["value"] = i;
+		sol::table t1g = state["t1"];
+		int v = t1g["value"];
+		if (v != i) { throw std::logic_error(""); }
+	}
 }
 
 struct FunctionWrap
