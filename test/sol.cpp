@@ -30,12 +30,12 @@ void binding_table_chain()
 	sol::state state;
 	state.script("t1={t2={t3={}}}");
 	// Adding the test here to just have comparison numbers up anyways
-	executed = true;
+	Benchmark::executed = true;
 	for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 	{
-		sol::table t1s = state["t1"];
+		sol::table t1s = state["t1"].get<sol::table>();
 		t1s["value"] = i;
-		sol::table t1g = state["t1"];
+		sol::table t1g = state["t1"].get<sol::table>();
 		int v = t1g["value"];
 		if (v != i) { throw std::logic_error(""); }
 	}
@@ -68,21 +68,15 @@ void binding_native_function_call()
 {
 	sol::state state;
 
-	//compile error at MSVC2015
-#ifndef _MSC_VER
 	state.set_function("native_function", Benchmark::native_function);
 	state.script(Benchmark::native_function_lua_code());
-#endif
 }
 
 
 void binding_object_set_get()
 {
 	sol::state state;
-	//compile error at MSVC2015
-#ifndef _MSC_VER
-	state.new_userdata<Benchmark::SetGet>("SetGet", "set", &Benchmark::SetGet::set, "get", &Benchmark::SetGet::get);
+	state.new_usertype<Benchmark::SetGet>("SetGet", "set", &Benchmark::SetGet::set, "get", &Benchmark::SetGet::get);
 	state.script("getset = SetGet.new()");
 	state.script(Benchmark::object_set_get_lua_code());
-#endif
 }
