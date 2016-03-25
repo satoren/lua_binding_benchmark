@@ -3,6 +3,8 @@ language: cpp
 
 compiler:
   - g++
+before_install:
+  - git submodule update --init --recursive
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
 addons:
