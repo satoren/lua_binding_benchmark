@@ -23,5 +23,5 @@ env:
   - GH_REF: github.com/satoren/lua_binding_benchmark.git
   - secure: FOVj8m7GhZN3roaK4qO9pepuJwoSOuI2v0Fze+l7pjx6Y0C0vLBJM4C6DUJvXuhiI+wSYVJOCpcZqLO5anjfmUY40vB9kg7p2sdeNMcVJHK7iBQ0+C0cQlkpLQ2QCs54YTAlD0EuLBeI5rb5xnDfKN71lm/r+1CdCd8kz3O4FsYshbHlG2HU3Wiu7ME2lNRQKudJ/gdjoAaf4avvg+u1SJnrkzi8zluM7KoJCDT1wNp0LSYeTzYrgk5IPcopVitP02U0I6LdlN6w79IG4zQEgxTpyYIMSCf2Kap+JPeANHuMe7tCQNOSglxtogQNiC2C61msNJ9x/uVsDHnH1igWMVtKz96uv5cTWIOIbP14Xq4ytBK6wGKkzHnxjXSjJ6dQTgA51fZUS1PlNlRKFl6s6jSFoLUYXq2AcLKPSSpVR4SD5Pzi2WOVU9zfDHR+ycpW5Giy/7BYjyVVoZGtIJtntzcTu+eofD4P3gyXGKTh6yWN6UcVmH9ao1jDkkb4nPzd64IuCvZibjOA/E1lgaNRWiSeiaPZuHx6LQq4fegO6wGj7hIKcknOxlms6ucPBO8Szyvgj9SUwg7zfA2PB3EbhnFWJgCX6CKfD8ptQGslf3Flz351WX7AV/EBTSH/ZWDW1MUy+Q/mSxPX3UMxw1d13pk4wvV7LXOqt9LmoFttOzI=
 script:
-- mkdir build && cd build && cmake ../ -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} && make execute_benchmark
-- cd ../ && '[ "$TRAVIS_BRANCH" == master ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./deploy.sh'
+ - mkdir build && cd build && cmake ../ -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} && make execute_benchmark
+ - cd ../ && [ "$TRAVIS_BRANCH" == master ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && ./deploy.sh
