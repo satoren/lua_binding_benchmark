@@ -29,7 +29,7 @@ void binding_native_function_call()
 {
 	sol::state state;
 
-	state.set_function("native_function", Benchmark::native_function);
+	state.set_function("native_function", sol::c_call<decltype(&Benchmark::native_function), &Benchmark::native_function>);
 	state.script(Benchmark::native_function_lua_code());
 }
 
@@ -44,7 +44,9 @@ void binding_lua_function_call()
 void binding_object_set_get()
 {
 	sol::state state;
-	state.new_usertype<Benchmark::SetGet>("SetGet", "set", &Benchmark::SetGet::set, "get", &Benchmark::SetGet::get);
+	state.new_usertype<Benchmark::SetGet>("SetGet",
+		"set", sol::c_call<decltype(&Benchmark::SetGet::set), &Benchmark::SetGet::set>, 
+		"get", sol::c_call<decltype(&Benchmark::SetGet::get), &Benchmark::SetGet::get>);
 	state.script("getset = SetGet.new()");
 	state.script(Benchmark::object_set_get_lua_code());
 }
