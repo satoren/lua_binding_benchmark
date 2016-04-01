@@ -71,6 +71,16 @@ struct LuaTableWrap
 		return v;
 	}
 };
+
+struct LuaFunctionWrap {
+	LuaFunction<std::string(std::string)> fx;
+	LuaFunctionWrap(LuaTable table) : fx(table.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name())) {
+	}
+
+	std::string operator() (std::string x) {
+		return fx.Invoke(x);
+	}
+};
 }
 
 void binding_global_table()
@@ -104,18 +114,24 @@ void binding_native_function_call()
 
 void binding_lua_function_call()
 {
+	Lua lua;
+	LuaTable global = lua.GetGlobalEnvironment();
+	LuaFunction<std::string(std::string)> fx = global.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name());
+	lua.RunScript(Benchmark::register_lua_function_lua_code());
+	LuaFunctionWrap f(global);
+	Benchmark::lua_function_call(f);
 }
 
 void binding_object_set_get()
 {
 
-Lua lua;
+	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-auto SetGet = lua.CreateUserdata<Benchmark::SetGet>(new Benchmark::SetGet());
-SetGet.Bind("set", &Benchmark::SetGet::set);
-SetGet.Bind("get", &Benchmark::SetGet::get);
+	auto SetGet = lua.CreateUserdata<Benchmark::SetGet>(new Benchmark::SetGet());
+	SetGet.Bind("set", &Benchmark::SetGet::set);
+	SetGet.Bind("get", &Benchmark::SetGet::get);
 
-global.Set("getset", SetGet);
+	global.Set("getset", SetGet);
 
 	lua.RunScript(Benchmark::object_set_get_lua_code());
 }
