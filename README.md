@@ -25,7 +25,7 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release
 make execute_benchmark
 ```
 
-on Windows
+on Windows with MSVC++
 ```
 mkdir build
 cd build
