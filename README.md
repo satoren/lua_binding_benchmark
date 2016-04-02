@@ -14,8 +14,7 @@ It is also good with the addition of another library benchmark.
 ##execute benchmark
 
 ```
-git submodule init
-git submodule update
+git submodule update --init --recursive
 ```
 
 on Linux
