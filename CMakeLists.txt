@@ -76,7 +76,7 @@ endif(NOT DISABLE_LUACPPINTERFACE)
 
 add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
 foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
-#add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
+add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
 endforeach(BENCHMARK_BINARY)
 add_custom_command(TARGET execute_benchmark POST_BUILD 
           COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result.csv)
@@ -96,5 +96,5 @@ add_custom_command(TARGET execute_benchmark POST_BUILD
 endif() 
           
 add_custom_command(TARGET execute_benchmark POST_BUILD
-          COMMAND lua library_info.lua ${LIBRARY_DIRS} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+          COMMAND lua library_info_dump.lua ${LIBRARY_DIRS} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     
