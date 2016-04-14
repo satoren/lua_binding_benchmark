@@ -79,19 +79,19 @@ foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
 add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
 endforeach(BENCHMARK_BINARY)
 add_custom_command(TARGET execute_benchmark POST_BUILD 
-          COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result.csv)
+          COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result/result.csv)
 
 
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL Linux) 
 
 add_custom_command(TARGET execute_benchmark POST_BUILD 
-          COMMAND bash system_info_dump.linux.sh > result_system_info.txt
+          COMMAND bash system_info_dump.linux.sh > result/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 else() 
 
 add_custom_command(TARGET execute_benchmark POST_BUILD 
-          COMMAND ${CMAKE_COMMAND} -E remove -f result_system_info.txt
+          COMMAND ${CMAKE_COMMAND} -E echo "" > result/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif() 
           

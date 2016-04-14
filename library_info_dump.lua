@@ -17,7 +17,7 @@ function split(str, pat)
    return t
 end
 
-out = assert(io.open("library_info.csv","w"))
+out = assert(io.open("result/library_info.csv","w"))
 for submoduleline in io.popen("git submodule status"):lines() do
 local hash,libpath,version = table.unpack(split(submoduleline," "))
 version = string.match(version, '%((.*)%)') or version

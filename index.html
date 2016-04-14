@@ -13,6 +13,7 @@
 
 
 <script type="text/javascript">
+//dirty code ;)
 
 // from https://gist.github.com/tigawa/8858345
 function csv2Array(filePath) {
@@ -42,7 +43,7 @@ function htmlspecialchars(ch) {
 function systemInfoText()
 {
   var data = new XMLHttpRequest();
-  data.open("GET", 'result_system_info.txt', false);
+  data.open("GET", './result/system_info.txt', false);
   data.send(null);
   var text ="";
   var LF = String.fromCharCode(10);
@@ -54,8 +55,8 @@ function systemInfoText()
 }
 
   document.getElementById("systemInfo").innerHTML = systemInfoText();
-  var resultdata = csv2Array('result.csv');
-  var library_info = csv2Array('library_info.csv');
+  var resultdata = csv2Array('./result/result.csv');
+  var library_info = csv2Array('./result/library_info.csv');
 
   var table = document.getElementById('libraryInfo');
   for (var i = 0; i < library_info.length;++i) {

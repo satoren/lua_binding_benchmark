@@ -1,10 +1,13 @@
 ----system info---
-Linux ubuntu 4.2.0-34-generic #39-Ubuntu SMP Thu Mar 10 22:13:01 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+Linux ubuntu 4.2.0-35-generic #40-Ubuntu SMP Tue Mar 15 22:15:45 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
 
 ----cpu info---
 vendor_id	: GenuineIntel
 model name	: Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz
 cpu MHz		: 3192.610
+
+----high resolution timer---
+  .resolution: 1 nsecs
 
 ----compiler version---
 c++ (Ubuntu 5.2.1-22ubuntu2) 5.2.1 20151010
