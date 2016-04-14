@@ -7,6 +7,8 @@
 
 <div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceTable"></div>
 
+<table id="libraryInfo"></table>
+
 <div style="margin:20px 10px; padding:0; width:90%; height:350px;" id="systemInfo"></div>
 
 
@@ -29,22 +31,45 @@ function csv2Array(filePath) {
 	}
 	return csvData;
 }
+function htmlspecialchars(ch) { 
+    ch = ch.replace(/&/g,"&amp;") ;
+    ch = ch.replace(/"/g,"&quot;") ;
+    ch = ch.replace(/'/g,"&#039;") ;
+    ch = ch.replace(/</g,"&lt;") ;
+    ch = ch.replace(/>/g,"&gt;") ;
+    return ch ;
+}
 function systemInfoText()
 {
-var data = new XMLHttpRequest();
-data.open("GET", 'result_system_info.txt', false);
-data.send(null);
-var text ="";
-var LF = String.fromCharCode(10);
-var lines = data.responseText.split(LF);
-for (var i = 0; i < lines.length;++i) {
-  text+= lines[i]+"<BR>"
-}
-return text
+  var data = new XMLHttpRequest();
+  data.open("GET", 'result_system_info.txt', false);
+  data.send(null);
+  var text ="";
+  var LF = String.fromCharCode(10);
+  var lines = data.responseText.split(LF);
+  for (var i = 0; i < lines.length;++i) {
+    text+= htmlspecialchars(lines[i])+"<BR>"
+  }
+  return text
 }
 
-document.getElementById("systemInfo").innerHTML = systemInfoText();
+  document.getElementById("systemInfo").innerHTML = systemInfoText();
   var resultdata = csv2Array('result.csv');
+  var library_info = csv2Array('library_info.csv');
+
+  var table = document.getElementById('libraryInfo');
+  for (var i = 0; i < library_info.length;++i) {
+    lib = library_info[i]
+    var row = table.insertRow(-1);
+    var namecell = row.insertCell(-1);
+    var versioncell = row.insertCell(-1);
+    var hashcell = row.insertCell(-1);
+    namecell.innerHTML = "<a href=" +lib[3]+ ">" + htmlspecialchars(lib[0]) + "</a>";
+    versioncell.innerHTML = htmlspecialchars(lib[1]);
+    var commituri = lib[3].substr(0,lib[3].length-4) + "/commit/" + lib[2];
+    hashcell.innerHTML = "<a href=" + commituri + ">" + htmlspecialchars(lib[2]) + "</a>"; lib[1];
+  }
+
 
 function to_barchart_data(arraydata)
 {
