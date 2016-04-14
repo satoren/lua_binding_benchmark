@@ -13,6 +13,7 @@ addons:
     - kalakris-cmake
     packages:
     - liblua5.2-dev
+    - lua5.2
     - libboost-all-dev
     - g++-4.9
     - cmake
