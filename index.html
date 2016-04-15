@@ -1,12 +1,16 @@
 <html>
 <head>
+  <div style="text-align:center;font-size:xx-large">lua binding library benchmark  </div>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
+  <br>
+  <div style="text-align:center">benchmark source code <a href="https://github.com/satoren/lua_binding_benchmark" style="font-size:large">here</a></div>
 <div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceGraph"></div>
 
 <div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceTable"></div>
 
+<div style="text-align:center">---library vesion---</a></div>
 <table id="libraryInfo"></table>
 
 <div style="margin:20px 10px; padding:0; width:90%; height:350px;" id="systemInfo"></div>
@@ -32,7 +36,7 @@ function csv2Array(filePath) {
 	}
 	return csvData;
 }
-function htmlspecialchars(ch) { 
+function htmlspecialchars(ch) {
     ch = ch.replace(/&/g,"&amp;") ;
     ch = ch.replace(/"/g,"&quot;") ;
     ch = ch.replace(/'/g,"&#039;") ;
