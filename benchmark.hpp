@@ -14,7 +14,7 @@ extern "C" {
 #include <stdexcept>
 
 
-constexpr int BENCHMARK_LOOP_COUNT = 1000000;
+constexpr int BENCHMARK_LOOP_COUNT = 5000000;
 namespace Benchmark
 {
 
@@ -113,8 +113,8 @@ namespace Benchmark
 	}
 	const char* native_function_lua_code()
 	{
-		return 
-			"local times = 1000000\n"
+		return
+			"local times = 5000000\n"
 			"for i=1,times do\n"
 			"local r = native_function(i)\n"
 			"if(r ~= i)then\n"
@@ -142,8 +142,8 @@ namespace Benchmark
 	const char* object_set_get_lua_code()
 	{
 		executed = true;
-		return 
-			"local times = 1000000\n"
+		return
+			"local times = 5000000\n"
 			"for i=1,times do\n"
 			"getset:set(i)\n"
 			"if(getset:get() ~= i)then\n"
