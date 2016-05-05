@@ -2,7 +2,7 @@
 #include "../benchmark.hpp"
 
 void binding_begin()
-{   
+{
 }
 void binding_end()
 {
@@ -43,10 +43,10 @@ void binding_lua_function_call()
 void binding_object_set_get()
 {
 	kaguya::State state;
-	state["SetGet"].setClass(kaguya::ClassMetatable<Benchmark::SetGet>()
-		.addConstructor()
-		.addMember("set", &Benchmark::SetGet::set)
-		.addMember("get", &Benchmark::SetGet::get)
+	state["SetGet"].setClass(kaguya::UserdataMetatable<Benchmark::SetGet>()
+		.setConstructors<Benchmark::SetGet()>()
+		.add("set", &Benchmark::SetGet::set)
+		.add("get", &Benchmark::SetGet::get)
 		);
 
 	Benchmark::SetGet getset;
