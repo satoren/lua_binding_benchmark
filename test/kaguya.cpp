@@ -45,8 +45,8 @@ void binding_object_set_get()
 	kaguya::State state;
 	state["SetGet"].setClass(kaguya::UserdataMetatable<Benchmark::SetGet>()
 		.setConstructors<Benchmark::SetGet()>()
-		.add("set", &Benchmark::SetGet::set)
-		.add("get", &Benchmark::SetGet::get)
+		.addFunction("set", &Benchmark::SetGet::set)
+		.addFunction("get", &Benchmark::SetGet::get)
 		);
 
 	Benchmark::SetGet getset;
