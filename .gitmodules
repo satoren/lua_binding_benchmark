@@ -18,4 +18,4 @@
 	url = https://github.com/SteveKChiu/lua-intf.git
 [submodule "binding_libs/luwra"]
 	path = binding_libs/luwra
-	url = git@github.com:vapourismo/luwra.git
+	url = https://github.com/vapourismo/luwra.git
