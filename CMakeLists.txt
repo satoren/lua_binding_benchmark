@@ -47,6 +47,10 @@ target_link_libraries(benchmark_sol2 ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/sol2/)
 
+add_executable(benchmark_luwra test/luwra.cpp)
+target_include_directories(benchmark_luwra PRIVATE binding_libs/luwra/lib)
+target_link_libraries(benchmark_luwra ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luwra)
 
 add_executable(benchmark_lua-intf test/lua-intf.cpp)
 target_include_directories(benchmark_lua-intf PRIVATE binding_libs/lua-intf)
@@ -55,7 +59,7 @@ set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_lua-intf)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/lua-intf/)
 
 
-#cannot build with lua5.3.4 
+#cannot build with lua5.3.4
 option(DISABLE_LUACPPINTERFACE OFF)
 if(NOT DISABLE_LUACPPINTERFACE)
 #luacppinterface's cmakelist is bad
@@ -78,23 +82,23 @@ add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
 foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
 add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
 endforeach(BENCHMARK_BINARY)
-add_custom_command(TARGET execute_benchmark POST_BUILD 
+add_custom_command(TARGET execute_benchmark POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result/result.csv)
 
 
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL Linux) 
+if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 
-add_custom_command(TARGET execute_benchmark POST_BUILD 
+add_custom_command(TARGET execute_benchmark POST_BUILD
           COMMAND bash system_info_dump.linux.sh > result/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-else() 
+else()
 
-add_custom_command(TARGET execute_benchmark POST_BUILD 
+add_custom_command(TARGET execute_benchmark POST_BUILD
           COMMAND ${CMAKE_COMMAND} -E echo "" > result/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif() 
-          
+endif()
+
 add_custom_command(TARGET execute_benchmark POST_BUILD
           COMMAND lua library_info_dump.lua ${LIBRARY_DIRS} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    
+
