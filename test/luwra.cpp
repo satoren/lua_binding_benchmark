@@ -17,7 +17,10 @@ void binding_global_table() {
 }
 
 void binding_table_chain() {
-	// Not supported yet
+	luwra::StateWrapper state;
+	state.runString("t1={t2={t3={}}}");
+
+	Benchmark::table_chain_access(state);
 }
 
 void binding_native_function_call() {
@@ -31,12 +34,7 @@ void binding_lua_function_call() {
 	luwra::StateWrapper state;
 	state.runString(Benchmark::register_lua_function_lua_code());
 
-	// Since Luwra expects the referenced function to exist on a Lua stack before execution,
-	// we have to push it manually. Luwra is way too minimal to work with Lua-native functions
-	// outside the scope of a wrapped function.
-	lua_getglobal(state, Benchmark::lua_function_name());
-
-	luwra::NativeFunction<std::string> func(state, -1);
+	luwra::NativeFunction<std::string> func = state[Benchmark::lua_function_name()];
 	Benchmark::lua_function_call(func);
 }
 
