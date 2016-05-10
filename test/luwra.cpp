@@ -19,7 +19,8 @@ void binding_global_table() {
 void binding_table_chain() {
 	luwra::StateWrapper state;
 	state.runString("t1={t2={t3={}}}");
-	Benchmark::global_table(state);
+
+	Benchmark::table_chain_access(state);
 }
 
 void binding_native_function_call() {
