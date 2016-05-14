@@ -44,12 +44,25 @@ void binding_object_set_get()
 {
 	kaguya::State state;
 	state["SetGet"].setClass(kaguya::UserdataMetatable<Benchmark::SetGet>()
-		.setConstructors<Benchmark::SetGet()>()
 		.addFunction("set", &Benchmark::SetGet::set)
 		.addFunction("get", &Benchmark::SetGet::get)
-		);
+	);
 
 	Benchmark::SetGet getset;
 	state["getset"] = &getset;
 	state(Benchmark::object_set_get_lua_code());
+}
+
+void binding_returning_object()
+{
+	using namespace Benchmark::returning_class_object;
+
+	kaguya::State state;
+	state["ReturnObject"].setClass(kaguya::UserdataMetatable<ReturnObject>()
+		.addFunction("set", &ReturnObject::set)
+		.addFunction("get", &ReturnObject::get)
+	);
+	state["object_function"] = &object_function;
+	state["object_compare"] = &object_compare;
+	state(lua_code());
 }

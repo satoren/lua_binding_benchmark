@@ -6,7 +6,7 @@
 #include "../benchmark.hpp"
 
 void binding_begin()
-{   
+{
 }
 void binding_end()
 {
@@ -106,7 +106,7 @@ void binding_native_function_call()
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
 	auto native_function = lua.CreateFunction<int(int)>(&Benchmark::native_function);
-	
+
 	global.Set("native_function", native_function);
 	lua.RunScript(Benchmark::native_function_lua_code());
 }
@@ -134,4 +134,12 @@ void binding_object_set_get()
 	global.Set("getset", SetGet);
 
 	lua.RunScript(Benchmark::object_set_get_lua_code());
+}
+
+
+void binding_returning_object()
+{
+	using namespace Benchmark::returning_class_object;
+
+
 }
