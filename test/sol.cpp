@@ -9,7 +9,7 @@
 
 
 void binding_begin()
-{   
+{
 }
 void binding_end()
 {
@@ -79,4 +79,18 @@ void binding_object_set_get()
 	state.new_usertype<Benchmark::SetGet>("SetGet", "set", &Benchmark::SetGet::set, "get", &Benchmark::SetGet::get);
 	state.script("getset = SetGet.new()");
 	state.script(Benchmark::object_set_get_lua_code());
+}
+
+
+void binding_returning_object()
+{
+	using namespace Benchmark::returning_class_object;
+	sol::state state;
+	state.new_usertype<ReturnObject>("ReturnObject",
+		"set", &ReturnObject::set,
+		"get", &ReturnObject::get
+		);
+	state["object_function"] = &object_function;
+	state["object_compare"] = &object_compare;
+	state.script(lua_code());
 }

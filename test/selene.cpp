@@ -2,7 +2,7 @@
 #include "../benchmark.hpp"
 
 void binding_begin()
-{   
+{
 }
 void binding_end()
 {
@@ -44,10 +44,21 @@ void binding_lua_function_call()
 void binding_object_set_get()
 {
 	sel::State state;
-
 	state["SetGet"].SetClass<Benchmark::SetGet>("set", &Benchmark::SetGet::set
 		, "get", &Benchmark::SetGet::get);
 	state("getset = SetGet.new()");
 
 	state(Benchmark::object_set_get_lua_code());
+}
+
+
+void binding_returning_object()
+{
+	using namespace Benchmark::returning_class_object;
+	sel::State state;
+	state["ReturnObject"].SetClass<ReturnObject>("set", &ReturnObject::set
+		, "get", &ReturnObject::get);
+	state["object_function"] = &object_function;
+	state["object_compare"] = &object_compare;
+	state(lua_code());
 }

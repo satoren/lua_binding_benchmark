@@ -12,6 +12,7 @@ extern "C" {
 
 #include <algorithm>
 #include <stdexcept>
+#include <random>
 
 
 constexpr int BENCHMARK_LOOP_COUNT = 5000000;
@@ -139,6 +140,7 @@ namespace Benchmark
 	private:
 		double _mem;
 	};
+
 	const char* object_set_get_lua_code()
 	{
 		executed = true;
@@ -172,6 +174,87 @@ namespace Benchmark
 			if (result != teststring) { throw std::logic_error(""); }
 		}
 	}
+
+
+	namespace returning_class_object
+	{
+		class ReturnObject
+		{
+		public:
+			ReturnObject() :_mem(0), _random(0) {
+				_data.resize(100000, 0);
+			}
+			ReturnObject(int seed) :_mem(0), _random(0) {
+				std::mt19937 mt(seed);
+				_random = mt();
+				_data.resize(10000, _random);
+			}
+
+			ReturnObject(const ReturnObject&) = default;
+			ReturnObject(ReturnObject&&) = default;
+			ReturnObject& operator=(const ReturnObject&) = default;
+			bool operator==(const ReturnObject& other)
+			{
+				return _data == other._data;
+			}
+			bool operator!=(const ReturnObject& other)
+			{
+				return _data != other._data;
+			}
+
+			void set(double i)
+			{
+				_mem = i;
+			}
+			double get()const
+			{
+				return _mem;
+			}
+			int random()const { return _random; }
+		private:
+			std::vector<int> _data;
+			double _mem;
+			int _random;
+		};
+
+
+		int returned_object_random;
+		ReturnObject object_function()
+		{
+			static int seed = 1;
+			ReturnObject obj(seed++);
+			returned_object_random = obj.random();
+			return obj;
+		}
+
+		bool object_compare(const ReturnObject& other)
+		{
+			executed = true;
+			if (returned_object_random != other.random())
+			{
+				abort();
+				return false;
+			}
+			return true;
+		}
+
+		const char* lua_code()
+		{
+			return
+				"local times = 100000\n"
+				"obj = object_function()\n"
+				"obj:set(3)\n"
+				"if(obj:get() ~= 3)then\n"
+				"  error('error')\n"
+				"end\n"
+				"for i=1,times do\n"
+				"  obj = object_function()\n"
+				"  object_compare(obj)\n"
+				"end\n";
+		}
+	}
+
+
 }
 
 void binding_begin();
@@ -183,6 +266,7 @@ void binding_global_table();
 void binding_table_chain();
 void binding_native_function_call();
 void binding_object_set_get();
+void binding_returning_object();
 void binding_lua_function_call();
 
 int main(int argc, const char* argv[])
@@ -197,6 +281,7 @@ int main(int argc, const char* argv[])
 	Benchmark::execute_benchmark("c function call", &binding_native_function_call);
 	Benchmark::execute_benchmark("lua function call", &binding_lua_function_call);
 	Benchmark::execute_benchmark("C++ object member call", &binding_object_set_get);
+	Benchmark::execute_benchmark("Returning a class object", &binding_returning_object);
 
 	Benchmark::out << std::endl;
 	std::cout << std::endl;

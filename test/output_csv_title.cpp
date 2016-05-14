@@ -1,14 +1,14 @@
 #include "../benchmark.hpp"
 
 void binding_begin()
-{    
+{
 	Benchmark::title_only = true;
 	Benchmark::out.close();
 	Benchmark::out.open(std::string("result.csv"), std::ios::out | std::ios::binary);
 }
 void binding_end()
 {
-    
+
 }
 
 
@@ -42,5 +42,9 @@ void binding_lua_function_call()
 
 
 void binding_object_set_get()
+{
+}
+
+void binding_returning_object()
 {
 }

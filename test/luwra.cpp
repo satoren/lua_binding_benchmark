@@ -52,3 +52,21 @@ void binding_object_set_get() {
 	state.runString("getset = SetGet()");
 	state.runString(Benchmark::object_set_get_lua_code());
 }
+
+void binding_returning_object()
+{
+	using namespace Benchmark::returning_class_object;
+	luwra::StateWrapper state;
+
+	state.registerUserType<ReturnObject()>(
+		"ReturnObject",
+		{
+			LUWRA_MEMBER(ReturnObject, set),
+			LUWRA_MEMBER(ReturnObject, get)
+		}
+	);
+
+	state["object_function"] = LUWRA_WRAP(object_function);
+	state["object_compare"] = LUWRA_WRAP(object_compare);
+	state.runString(lua_code());
+}
