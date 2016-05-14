@@ -17,70 +17,70 @@ const char* binding_name()
 }
 namespace
 {
-//luacppinterface is bracket operator not supported
-struct GlobalTableWrap
-{
-	LuaTable table_;
-	const char* current_key;
-	GlobalTableWrap(LuaTable& table) :table_(table),current_key(0) {}
-	GlobalTableWrap& operator[](const char* key)
+	//luacppinterface is bracket operator not supported
+	struct GlobalTableWrap
 	{
-		current_key = key;
-		return *this;
-	}
-
-	int operator=(int value)
-	{
-		table_.Set(current_key,value);
-		return value;
-	}
-	operator int()
-	{
-		int v = table_.Get<int>(current_key);
-		current_key = 0;
-		return v;
-	}
-};
-struct LuaTableWrap
-{
-	LuaTable table_;
-	const char* current_key;
-	LuaTableWrap(LuaTable table) :table_(table),current_key(0) {}
-	LuaTableWrap(LuaTable table,const char* key) :table_(table),current_key(key) {}
-	LuaTableWrap operator[](const char* key)
-	{
-		if(current_key)
+		LuaTable table_;
+		const char* current_key;
+		GlobalTableWrap(LuaTable& table) :table_(table), current_key(0) {}
+		GlobalTableWrap& operator[](const char* key)
 		{
-			return LuaTableWrap(table_.Get<LuaTable>(current_key),key);
+			current_key = key;
+			return *this;
 		}
-		else
+
+		int operator=(int value)
 		{
-			return LuaTableWrap(table_,key);
+			table_.Set(current_key, value);
+			return value;
 		}
-	}
-
-	int operator=(int value)
+		operator int()
+		{
+			int v = table_.Get<int>(current_key);
+			current_key = 0;
+			return v;
+		}
+	};
+	struct LuaTableWrap
 	{
-		table_.Set(current_key,value);
-		return value;
-	}
-	operator int()
-	{
-		int v = table_.Get<int>(current_key);
-		current_key = 0;
-		return v;
-	}
-};
+		LuaTable table_;
+		const char* current_key;
+		LuaTableWrap(LuaTable table) :table_(table), current_key(0) {}
+		LuaTableWrap(LuaTable table, const char* key) :table_(table), current_key(key) {}
+		LuaTableWrap operator[](const char* key)
+		{
+			if (current_key)
+			{
+				return LuaTableWrap(table_.Get<LuaTable>(current_key), key);
+			}
+			else
+			{
+				return LuaTableWrap(table_, key);
+			}
+		}
 
-struct LuaFunctionWrap {
-	LuaFunction<std::string(std::string)> fx;
-	LuaFunctionWrap(LuaTable table) : fx(table.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name())) {
-	}
+		int operator=(int value)
+		{
+			table_.Set(current_key, value);
+			return value;
+		}
+		operator int()
+		{
+			int v = table_.Get<int>(current_key);
+			current_key = 0;
+			return v;
+		}
+	};
 
-	std::string operator() (std::string x) {
-		return fx.Invoke(x);
-	}
-};
+	struct LuaFunctionWrap {
+		LuaFunction<std::string(std::string)> fx;
+		LuaFunctionWrap(LuaTable table) : fx(table.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name())) {
+		}
+
+		std::string operator() (std::string x) {
+			return fx.Invoke(x);
+		}
+	};
 }
 
 void binding_global_table()
@@ -138,15 +138,15 @@ void binding_object_set_get()
 
 struct object_function_wrap
 {
-		Lua& lua;
-		object_function_wrap(Lua& l):lua(l){}
+	Lua& lua;
+	object_function_wrap(Lua& l) :lua(l) {}
 	LuaUserdata<Benchmark::returning_class_object::ReturnObject> operator()()
 	{
 		using namespace Benchmark::returning_class_object;
 		auto retobj = lua.CreateUserdata<ReturnObject>(new ReturnObject(object_function()));
 		retobj.Bind("set", &ReturnObject::set);
 		retobj.Bind("get", &ReturnObject::get);
-   return retobj;
+		return retobj;
 	}
 };
 
@@ -154,7 +154,7 @@ struct object_compare_wrap
 {
 	bool operator()(LuaUserdata<Benchmark::returning_class_object::ReturnObject> userdata)
 	{
-			return object_compare(*userdata.GetPointer());
+		return object_compare(*userdata.GetPointer());
 	}
 };
 
@@ -162,13 +162,13 @@ void binding_returning_object()
 {
 	using namespace Benchmark::returning_class_object;
 
-		Lua lua;
-		LuaTable global = lua.GetGlobalEnvironment();
-		auto object_f = lua.CreateFunction<LuaUserdata<ReturnObject>()>(object_function_wrap(lua));
-		global.Set("object_function", object_f);
+	Lua lua;
+	LuaTable global = lua.GetGlobalEnvironment();
+	auto object_f = lua.CreateFunction<LuaUserdata<ReturnObject>()>(object_function_wrap(lua));
+	global.Set("object_function", object_f);
 
-  	auto object_compare_f = lua.CreateFunction<bool(LuaUserdata<ReturnObject>)>(object_compare_wrap());
-		global.Set("object_compare", object_compare_f);
-		lua.RunScript(lua_code());
+	auto object_compare_f = lua.CreateFunction<bool(LuaUserdata<ReturnObject>)>(object_compare_wrap());
+	global.Set("object_compare", object_compare_f);
+	lua.RunScript(lua_code());
 
 }
