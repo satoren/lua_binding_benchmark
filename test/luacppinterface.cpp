@@ -136,10 +136,39 @@ void binding_object_set_get()
 	lua.RunScript(Benchmark::object_set_get_lua_code());
 }
 
+struct object_function_wrap
+{
+		Lua& lua;
+		object_function_wrap(Lua& l):lua(l){}
+	LuaUserdata<Benchmark::returning_class_object::ReturnObject> operator()()
+	{
+		using namespace Benchmark::returning_class_object;
+		auto retobj = lua.CreateUserdata<ReturnObject>(new ReturnObject(object_function()));
+		retobj.Bind("set", &ReturnObject::set);
+		retobj.Bind("get", &ReturnObject::get);
+   return retobj;
+	}
+};
+
+struct object_compare_wrap
+{
+	bool operator()(LuaUserdata<Benchmark::returning_class_object::ReturnObject> userdata)
+	{
+			return object_compare(*userdata.GetPointer());
+	}
+};
 
 void binding_returning_object()
 {
 	using namespace Benchmark::returning_class_object;
 
+		Lua lua;
+		LuaTable global = lua.GetGlobalEnvironment();
+		auto object_f = lua.CreateFunction<LuaUserdata<ReturnObject>()>(object_function_wrap(lua));
+		global.Set("object_function", object_f);
+
+  	auto object_compare_f = lua.CreateFunction<bool(LuaUserdata<ReturnObject>)>(object_compare_wrap());
+		global.Set("object_compare", object_compare_f);
+		lua.RunScript(lua_code());
 
 }
