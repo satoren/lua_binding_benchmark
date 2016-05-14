@@ -182,7 +182,7 @@ namespace Benchmark
 		{
 		public:
 			ReturnObject() :_mem(0), _random(0) {
-				_data.resize(100000, 0);
+				_data.resize(1000000, 0);
 			}
 			ReturnObject(int seed) :_mem(0), _random(0) {
 				std::mt19937 mt(seed);
@@ -191,8 +191,10 @@ namespace Benchmark
 			}
 
 			ReturnObject(const ReturnObject&) = default;
-			ReturnObject(ReturnObject&&) = default;
 			ReturnObject& operator=(const ReturnObject&) = default;
+			ReturnObject(ReturnObject&&) = default;
+			ReturnObject& operator=(ReturnObject&& other) = default;
+			~ReturnObject(){}
 			bool operator==(const ReturnObject& other)
 			{
 				return _data == other._data;

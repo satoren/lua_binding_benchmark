@@ -182,6 +182,13 @@ int setget_get(lua_State* L)
 	lua_pushnumber(L, setget->get());
 	return 1;
 }
+int setget_gc(lua_State* L)
+{
+	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
+	setget->~SetGet();
+	return 0;
+}
+
 
 void binding_object_set_get()
 {
@@ -191,6 +198,7 @@ void binding_object_set_get()
 	luaL_Reg funcs[] =
 	{
 		{ "new",setget_new },
+		{ "__gc",setget_gc },
 		{ 0 ,0 },
 	};
 	setfuncs(state, funcs);
@@ -214,7 +222,80 @@ void binding_object_set_get()
 }
 
 
+int retobj_set(lua_State* L)
+{
+	using namespace Benchmark::returning_class_object;
+	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
+	obj->set(lua_tonumber(L, 2));
+	return 0;
+}
+int retobj_get(lua_State* L)
+{
+	using namespace Benchmark::returning_class_object;
+	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
+	lua_pushnumber(L, obj->get());
+	return 1;
+}
+
+int retobj_gc(lua_State* L)
+{
+	using namespace Benchmark::returning_class_object;
+	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
+	obj->~ReturnObject();
+	return 1;
+}
+
+
+int object_function_bind(lua_State* L)
+{
+	using namespace Benchmark::returning_class_object;
+
+	void* ptr = lua_newuserdata(L, sizeof(ReturnObject));
+	new(ptr) ReturnObject(object_function());
+	setmetatable(L, "ReturnObject");
+	return 1;
+}
+
+int object_compare_bind(lua_State* L)
+{
+	using namespace Benchmark::returning_class_object;
+	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
+	bool result = object_compare(*obj);
+	lua_pushboolean(L, result);
+	return 1;
+}
 
 void binding_returning_object()
 {
+	using namespace Benchmark::returning_class_object;
+
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+
+	luaL_newmetatable(state, "ReturnObject");
+	luaL_Reg funcs[] =
+	{
+		{ "__gc",retobj_gc },
+		{ 0 ,0 },
+	};
+	setfuncs(state, funcs);
+	lua_newtable(state);
+	luaL_Reg indexfuncs[] =
+	{
+		{ "set",retobj_set },
+		{ "get",retobj_get },
+		{ 0 ,0 },
+	};
+	setfuncs(state, indexfuncs);
+	lua_setfield(state, -2, "__index");
+
+
+	lua_pushcclosure(state, object_function_bind, 0);
+	lua_setglobal(state, "object_function");
+	lua_pushcclosure(state, object_compare_bind, 0);
+	lua_setglobal(state, "object_compare");
+
+	luaL_dostring(state, lua_code());
+
+	lua_close(state);
+
 }
