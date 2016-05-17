@@ -16,6 +16,7 @@ extern "C" {
 
 
 constexpr int BENCHMARK_LOOP_COUNT = 5000000;
+#define BENCHMARK_LOOP_COUNT_STR "5000000"
 namespace Benchmark
 {
 
@@ -115,7 +116,7 @@ namespace Benchmark
 	const char* native_function_lua_code()
 	{
 		return
-			"local times = 5000000\n"
+			"local times = " BENCHMARK_LOOP_COUNT_STR "\n"
 			"for i=1,times do\n"
 			"local r = native_function(i)\n"
 			"if(r ~= i)then\n"
@@ -145,7 +146,7 @@ namespace Benchmark
 	{
 		executed = true;
 		return
-			"local times = 5000000\n"
+			"local times = " BENCHMARK_LOOP_COUNT_STR "\n"
 			"for i=1,times do\n"
 			"getset:set(i)\n"
 			"if(getset:get() ~= i)then\n"
@@ -182,12 +183,11 @@ namespace Benchmark
 		{
 		public:
 			ReturnObject() :_mem(0), _random(0) {
-				_data.resize(1000000, 0);
 			}
 			ReturnObject(int seed) :_mem(0), _random(0) {
 				std::mt19937 mt(seed);
 				_random = mt();
-				_data.resize(10000, _random);
+				_data.resize(10, _random);
 			}
 
 			ReturnObject(const ReturnObject&) = default;
@@ -243,7 +243,7 @@ namespace Benchmark
 		const char* lua_code()
 		{
 			return
-				"local times = 100000\n"
+				"local times = " BENCHMARK_LOOP_COUNT_STR "/10 \n"
 				"obj = object_function()\n"
 				"obj:set(3)\n"
 				"if(obj:get() ~= 3)then\n"
