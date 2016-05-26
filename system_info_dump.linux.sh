@@ -11,6 +11,7 @@ echo "----high resolution timer---"
 cat /proc/timer_list | grep resolution | sort | uniq
 echo ""
 echo "----compiler version---"
-c++ --version
+if [ "$CXX" = "" ]; then c++ --version; else "$CXX" --version; fi
+
 
 
