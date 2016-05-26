@@ -58,6 +58,15 @@ target_link_libraries(benchmark_lua-intf ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_lua-intf)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/lua-intf/)
 
+add_subdirectory(binding_libs/luabind-deboostified/src/)
+target_include_directories(luabind PRIVATE binding_libs/luabind-deboostified)
+
+add_executable(benchmark_luabind-deboostified test/luabind-deboostified.cpp)
+target_include_directories(benchmark_luabind-deboostified PRIVATE binding_libs/luabind-deboostified)
+target_link_libraries(benchmark_luabind-deboostified luabind)
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luabind-deboostified)
+set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/luabind-deboostified/)
+
 
 #cannot build with lua5.3.4
 option(DISABLE_LUACPPINTERFACE OFF)
@@ -101,4 +110,3 @@ endif()
 
 add_custom_command(TARGET execute_benchmark POST_BUILD
           COMMAND lua library_info_dump.lua ${LIBRARY_DIRS} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-

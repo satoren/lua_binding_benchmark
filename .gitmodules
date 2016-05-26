@@ -19,3 +19,6 @@
 [submodule "binding_libs/luwra"]
 	path = binding_libs/luwra
 	url = https://github.com/vapourismo/luwra.git
+[submodule "binding_libs/luabind-deboostified"]
+	path = binding_libs/luabind-deboostified
+	url = https://github.com/Wohlhabend-Networks/luabind-deboostified.git

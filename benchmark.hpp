@@ -84,6 +84,11 @@ namespace Benchmark
 
 	}
 
+	template<typename T,typename O>T benchmark_type_cast(O && obj)
+	{
+		return obj;
+	}
+
 	template<typename T>
 	void global_table(T& globaltable)
 	{
@@ -91,7 +96,7 @@ namespace Benchmark
 		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 		{
 			globaltable["value"] = i;
-			int v = globaltable["value"];
+			int v = benchmark_type_cast<int>(globaltable["value"]);
 			if (v != i) { throw std::logic_error(""); }
 		}
 	}
@@ -102,7 +107,7 @@ namespace Benchmark
 		for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
 		{
 			table["t1"]["value"] = i;
-			int v = table["t1"]["value"];
+			int v = benchmark_type_cast<int>(table["t1"]["value"]);
 			if (v != i) { throw std::logic_error(""); }
 		}
 	}
