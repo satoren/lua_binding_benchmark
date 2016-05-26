@@ -77,7 +77,9 @@ set(LUACPPINTERFACESRC
 	binding_libs/luacppinterface/LuaCppInterface/luareference.cpp
 	binding_libs/luacppinterface/LuaCppInterface/luacppinterface.cpp
 	binding_libs/luacppinterface/LuaCppInterface/luatable.cpp
-	binding_libs/luacppinterface/LuaCppInterface/luafunction.cpp)
+	binding_libs/luacppinterface/LuaCppInterface/luafunction.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luaerror.cpp
+	binding_libs/luacppinterface/LuaCppInterface/luastringconversion.cpp)
 #add_subdirectory(binding_libs/luacppinterface)
 add_executable(benchmark_luacppinterface ${LUACPPINTERFACESRC} test/luacppinterface.cpp)
 target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface/LuaCppInterface)

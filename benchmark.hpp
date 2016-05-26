@@ -87,7 +87,7 @@ namespace Benchmark
 
 	template<typename T,typename O>T benchmark_type_cast(O && obj)
 	{
-		return obj;
+		return std::forward<O>(obj);
 	}
 
 	template<typename T>
