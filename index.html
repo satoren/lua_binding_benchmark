@@ -6,7 +6,7 @@
 <body>
   <br>
   <div style="text-align:center">benchmark source code <a href="https://github.com/satoren/lua_binding_benchmark" style="font-size:large">here</a></div>
-<div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceGraph"></div>
+<div style="margin:20px 10px; padding:0; width:90%;" id="performanceGraph"></div>
 
 <div style="margin:20px 10px; padding:0; width:90%; height:100%;" id="performanceTable"></div>
 
@@ -102,18 +102,63 @@ function to_barchart_data(arraydata)
 	}
   return r;
 }
+
+
+function add_graphs(parent,arraydata)
+{
+  var libnum =  arraydata.length - 1
+  var graphnum =  arraydata[0].length - 1
+	for (var i = 1; i < graphnum+1;++i) {
+    var graph = document.createElement('DIV');
+    parent.appendChild(graph);
+    graph.style="width:100%;height:50%"
+    var options = {
+      title: arraydata[0][i],
+      chartArea: {'width':'70%', 'height':'65%', 'left':150 },
+      hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
+      vAxis: { title:'Library',  titleTextStyle:{italic:false} },
+      crosshair: { trigger: 'both' }
+    };
+    var data =[];
+    data.push(['library','score'])
+
+  	for (var li = 1; li < libnum+1;++li) {
+      var c = [];
+     c.push(arraydata[li][0])
+      var n = Number(arraydata[li][i])
+      if (n == 0)
+      {
+       c.push(null)
+      }
+      else {
+      c.push(n)
+      }
+      data.push(c)
+    }
+        var chart = new google.visualization.BarChart(graph);
+        chart.draw(google.visualization.arrayToDataTable(to_barchart_data(data)), options);
+  }
+}
+
+
 google.charts.load("current", {packages: ['corechart','table']});
 google.charts.setOnLoadCallback(function(){
   var data = google.visualization.arrayToDataTable(to_barchart_data(resultdata));
-  var options = {
-    title: 'Graph',
-    chartArea: {'width':'70%', 'height':'65%', 'left':150 },
-    hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
-    vAxis: { title:'Library',  titleTextStyle:{italic:false} },
-    crosshair: { trigger: 'both' }
-  };
-  var chart = new google.visualization.BarChart(document.getElementById('performanceGraph'));
-  chart.draw(data, options);
+
+    //all in one graph
+//  var options = {
+//    title: 'Graph',
+//    chartArea: {'width':'70%', 'height':'65%', 'left':150 },
+//    hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
+//    vAxis: { title:'Library',  titleTextStyle:{italic:false} },
+//    crosshair: { trigger: 'both' }
+//  };
+//  var chart = new google.visualization.BarChart(document.getElementById('performanceGraph'));
+//  chart.draw(data, options);
+//
+//per benchmark type graph
+    var graphs = document.getElementById('performanceGraph')
+    add_graphs(graphs,resultdata)
 
     var table = new google.visualization.Table(document.getElementById('performanceTable'));
     table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
