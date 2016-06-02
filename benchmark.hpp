@@ -13,6 +13,7 @@ extern "C" {
 #include <algorithm>
 #include <stdexcept>
 #include <random>
+#include <thread>
 
 
 constexpr int BENCHMARK_LOOP_COUNT = 5000000;
@@ -66,6 +67,7 @@ namespace Benchmark
 		for (int i = 0; i < N; ++i)
 		{
 			executed = false;
+			std::this_thread::yield();
 			double start = timer.clock();
 			function();
 			double end = timer.clock();
