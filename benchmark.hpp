@@ -192,8 +192,7 @@ namespace Benchmark
 			ReturnObject() :_mem(0), _random(0) {
 			}
 			ReturnObject(int seed) :_mem(0), _random(0) {
-				std::mt19937 mt(seed);
-				_random = mt();
+				_random = seed;
 				_data.resize(10, _random);
 			}
 
