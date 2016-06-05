@@ -14,6 +14,7 @@ extern "C" {
 #include <stdexcept>
 #include <chrono>
 #include <thread>
+#include <ctime>
 
 
 constexpr int BENCHMARK_LOOP_COUNT = 5000000;
@@ -33,10 +34,9 @@ namespace Benchmark
 			std::cout << "," << benchmark_name;
 			return;
 		}
-		typedef std::conditional<std::chrono::high_resolution_clock::is_steady, std::chrono::high_resolution_clock, std::chrono::steady_clock>::type clock;
 
-		std::chrono::milliseconds total_time(0);
-		std::chrono::milliseconds min_time = std::chrono::milliseconds::max();
+		uint32_t total_time(0);
+		uint32_t min_time = std::numeric_limits<uint32_t>::max();
 		static const int N = 10;
 
 
@@ -45,22 +45,22 @@ namespace Benchmark
 			executed = false;
 			std::this_thread::yield();
 
-			auto start = clock::now();
+			auto start = clock();
 			function();
-			auto end = clock::now();
-			std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+			auto end = clock();
+			uint32_t elapsed = static_cast<uint32_t>((end - start) / (CLOCKS_PER_SEC / 1000.0));
 			if (executed)
 			{
 				total_time += elapsed;
 				min_time = std::min(min_time, elapsed);
 			}
 		}
-		if (min_time == std::chrono::milliseconds::max())
+		if (min_time == std::numeric_limits<uint32_t>::max())
 		{
-			min_time = std::chrono::milliseconds(0);
+			min_time = 0;
 		}
-		Benchmark::out << "," << min_time.count();
-		std::cout << "," << min_time.count();
+		Benchmark::out << "," << min_time;
+		std::cout << "," << min_time;
 
 	}
 
