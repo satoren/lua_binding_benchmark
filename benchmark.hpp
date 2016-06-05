@@ -12,7 +12,7 @@ extern "C" {
 
 #include <algorithm>
 #include <stdexcept>
-#include <random>
+#include <chrono>
 #include <thread>
 
 
@@ -20,33 +20,6 @@ constexpr int BENCHMARK_LOOP_COUNT = 5000000;
 #define BENCHMARK_LOOP_COUNT_STR "5000000"
 namespace Benchmark
 {
-
-	struct Timer
-	{
-		lua_State *state_;
-
-		Timer() :state_(luaL_newstate())
-		{
-			luaL_openlibs(state_);
-			lua_getglobal(state_, "os");
-			lua_getfield(state_, -1, "clock");
-		}
-
-		~Timer()
-		{
-			lua_close(state_);
-		}
-		double clock()const
-		{
-			lua_pushvalue(state_, -1);
-			lua_pcall(state_, 0, 1, 0);
-			double t = lua_tonumber(state_, -1);
-			lua_pop(state_, 1);
-			return t;
-		}
-	};
-
-
 	std::ofstream out;
 	bool executed = false;
 	bool title_only = false;
@@ -60,30 +33,34 @@ namespace Benchmark
 			std::cout << "," << benchmark_name;
 			return;
 		}
-		Timer timer;
-		double total_time = 0;
-		double min_time = std::numeric_limits<double>::max();
+		typedef std::conditional<std::chrono::high_resolution_clock::is_steady, std::chrono::high_resolution_clock, std::chrono::steady_clock>::type clock;
+
+		std::chrono::milliseconds total_time(0);
+		std::chrono::milliseconds min_time = std::chrono::milliseconds::max();
 		static const int N = 10;
+
+
 		for (int i = 0; i < N; ++i)
 		{
 			executed = false;
 			std::this_thread::yield();
-			double start = timer.clock();
-			function();
-			double end = timer.clock();
 
+			auto start = clock::now();
+			function();
+			auto end = clock::now();
+			std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 			if (executed)
 			{
-				total_time += end - start;
-				min_time = std::min(min_time, end - start);
+				total_time += elapsed;
+				min_time = std::min(min_time, elapsed);
 			}
 		}
-		if (min_time == std::numeric_limits<double>::max())
+		if (min_time == std::chrono::milliseconds::max())
 		{
-			min_time = 0;
+			min_time = std::chrono::milliseconds(0);
 		}
-		Benchmark::out << "," << min_time * 1000;
-		std::cout << "," << min_time * 1000;
+		Benchmark::out << "," << min_time.count();
+		std::cout << "," << min_time.count();
 
 	}
 
