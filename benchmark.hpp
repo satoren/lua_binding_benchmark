@@ -9,6 +9,7 @@ extern "C" {
 #include <string>
 #include <ostream>
 #include <iostream>
+#include <vector>
 
 #include <algorithm>
 #include <stdexcept>

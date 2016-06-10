@@ -70,6 +70,7 @@ set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/luabind-deboostified/)
 
 #cannot build with lua5.3.4
 option(DISABLE_LUACPPINTERFACE OFF)
+# use compat flags to make it build with lua 5.3.4
 if(NOT DISABLE_LUACPPINTERFACE)
 #luacppinterface's cmakelist is bad
 set(LUACPPINTERFACESRC
@@ -81,6 +82,7 @@ set(LUACPPINTERFACESRC
 #add_subdirectory(binding_libs/luacppinterface)
 add_executable(benchmark_luacppinterface ${LUACPPINTERFACESRC} test/luacppinterface.cpp)
 target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface/LuaCppInterface)
+set_target_properties(benchmark_luacppinterface PROPERTIES COMPILE_FLAGS -DLUA_COMPAT_APIINTCASTS)
 target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_luacppinterface)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/luacppinterface/)
