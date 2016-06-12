@@ -44,7 +44,7 @@ namespace Benchmark
 		for (int i = 0; i < N; ++i)
 		{
 			executed = false;
-			std::this_thread::yield();
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 			auto start = clock();
 			function();
