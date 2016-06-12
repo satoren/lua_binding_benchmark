@@ -116,7 +116,7 @@ function add_graphs(parent,arraydata)
       title: arraydata[0][i],
       chartArea: {'width':'70%', 'height':'65%', 'left':150 },
       hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
-      vAxis: { title:'Library',  titleTextStyle:{italic:false} },
+      vAxis: { title:arraydata[0][0],  titleTextStyle:{italic:false} },
       crosshair: { trigger: 'both' }
     };
     var data =[];

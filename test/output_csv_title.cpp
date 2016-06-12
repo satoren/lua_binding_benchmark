@@ -14,7 +14,7 @@ void binding_end()
 
 const char* binding_name()
 {
-	return "Library";
+	return "Library + " LUA_VERSION;
 }
 void binding_global_table()
 {
@@ -29,15 +29,6 @@ void binding_native_function_call()
 }
 void binding_lua_function_call()
 {
-	/*
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-	luaL_dostring(state, Benchmark::register_lua_function_lua_code());
-
-	lua_getglobal(state, Benchmark::lua_function_name());
-	FunctionWrap f(state, luaL_ref(state, LUA_REGISTRYINDEX));
-	Benchmark::lua_function_call(f);
-
-	lua_close(state);*/
 }
 
 
