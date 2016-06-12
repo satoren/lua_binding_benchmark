@@ -17,7 +17,7 @@ It is also good with the addition of another library benchmark.
 git submodule update --init --recursive
 ```
 
-on Linux
+#### on Linux
 ```
 mkdir build
 cd build
@@ -25,11 +25,13 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release
 make execute_benchmark
 ```
 
-on Windows with MSVC++
+#### on Windows with MSVC++
+
+Download lua source code and extract to root of working tree
 ```
 mkdir build
 cd build
-cmake ../ -DCMAKE_BUILD_TYPE=Release
+cmake ../ -DCMAKE_BUILD_TYPE=Release -DLOCAL_LUA_DIRECTORY=luadirectoryname
 ```
 open build/lua_binding_benchmark.sln and build 'execute_benchmark' project
 

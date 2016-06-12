@@ -1,12 +1,23 @@
 
-if(NOT LUA_INCLUDE_DIRS)
+if(LUA_SEARCH_LIB_NAME)
+  find_package(PkgConfig)
+  foreach(modulename ${LUA_SEARCH_LIB_NAME})
+    pkg_search_module(LUA ${modulename})
+  endforeach(modulename)
+endif(LUA_SEARCH_LIB_NAME)
+
+
+if(LOCAL_LUA_DIRECTORY)
   #search local directory
-  set(LOCAL_LUA_DIRECTORY lua-5.3.2)
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY})
     file(COPY Lua-CMakeLists.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY})
     file(RENAME ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY}/Lua-CMakeLists.txt ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY}/CMakeLists.txt)
     add_subdirectory(${LOCAL_LUA_DIRECTORY})
-   set(LUA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY}/src)
+
+    set(LUA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY}/src)
+    if(NOT EXISTS ${LUA_INCLUDE_DIRS}/lua.h)
+      set(LUA_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/${LOCAL_LUA_DIRECTORY}/include)
+    endif()
    set(LUA_LIBRARIES liblua)
    if(NOT ${MSVC})
       set(LUA_LIBRARIES libm)
