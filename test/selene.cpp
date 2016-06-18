@@ -1,64 +1,60 @@
 #include "selene.h"
-#include "../benchmark.hpp"
+#include "benchmark/benchmark.hpp"
 
-void binding_begin()
-{
-}
-void binding_end()
-{
-}
-const char* binding_name()
-{
-	return "Selene";
-}
 
-void binding_global_table()
+BENCHMARK_DEFINE_LIBRARY_NAME("Selene")
+
+
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state;
-	Benchmark::global_table(state);
+	benchmark_exec(state);
 }
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-void binding_table_chain()
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state;
 	state("t1={t2={t3={}}}");
-	Benchmark::table_chain_access(state);
+	benchmark_exec(state);
 }
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
 
-void binding_native_function_call()
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state;
-	state["native_function"] = &Benchmark::native_function;
-	state(Benchmark::native_function_lua_code());
+	state["native_function"] = &native_function;
+	state(lua_code);
 }
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_lua_function_call()
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state;
-
-	state(Benchmark::register_lua_function_lua_code());
-	auto f = state[Benchmark::lua_function_name()];
-	Benchmark::lua_function_call(f);
+	state(register_lua_function_code);
+	auto f = state[lua_function_name];
+	benchmark_exec(f);
 }
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_object_set_get()
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state;
-	state["SetGet"].SetClass<Benchmark::SetGet>("set", &Benchmark::SetGet::set
-		, "get", &Benchmark::SetGet::get);
-	state("getset = SetGet.new()");
-
-	state(Benchmark::object_set_get_lua_code());
+	state["TestClass"].SetClass<TestClass>("set", &TestClass::set
+		, "get", &TestClass::get);
+	state("getset = TestClass.new()");
+	state(lua_code);
 }
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-
-void binding_returning_object()
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
-	using namespace Benchmark::returning_class_object;
 	sel::State state;
-	state["ReturnObject"].SetClass<ReturnObject>("set", &ReturnObject::set
-		, "get", &ReturnObject::get);
+	state["TestClass"].SetClass<TestClass>("set", &TestClass::set
+		, "get", &TestClass::get);
 	state["object_function"] = &object_function;
 	state["object_compare"] = &object_compare;
-	state(lua_code());
+	state(lua_code);
 }
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
+

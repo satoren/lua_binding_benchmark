@@ -1,67 +1,63 @@
-#include "../benchmark.hpp"
 #include "sol.hpp"
 
-void binding_begin()
-{
-}
-void binding_end()
-{
-}
-const char* binding_name()
-{
-	return "sol2";
-}
+#include "benchmark/benchmark.hpp"
 
-void binding_global_table()
+
+BENCHMARK_DEFINE_LIBRARY_NAME("sol2")
+
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	Benchmark::global_table(state);
+	benchmark_exec(state);
 }
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-void binding_table_chain()
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
 	state.script("t1={t2={t3={}}}");
-	Benchmark::table_chain_access(state);
+	benchmark_exec(state);
 }
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
 
-void binding_native_function_call()
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-
-	state.set_function("native_function", &Benchmark::native_function);
-	state.script(Benchmark::native_function_lua_code());
+	state["native_function"] = &native_function;
+	state.script(lua_code);
 }
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_lua_function_call()
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	state.script(Benchmark::register_lua_function_lua_code());
-	sol::function f = state[Benchmark::lua_function_name()];
-	Benchmark::lua_function_call(f);
+	state.script(register_lua_function_code);
+	sol::function f = state[lua_function_name];
+	benchmark_exec(f);
 }
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_object_set_get()
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	state.new_usertype<Benchmark::SetGet>("SetGet",
-		"set", &Benchmark::SetGet::set,
-		"get", &Benchmark::SetGet::get
+	state.new_usertype<TestClass>("TestClass",
+		"set", &TestClass::set,
+		"get", &TestClass::get
 		);
-	state.script("getset = SetGet.new()");
-	state.script(Benchmark::object_set_get_lua_code());
+	state.script("getset = TestClass.new()");
+	state.script(lua_code);
 }
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-
-void binding_returning_object()
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
-	using namespace Benchmark::returning_class_object;
 	sol::state state;
-	state.new_usertype<ReturnObject>("ReturnObject",
-		"set", &ReturnObject::set,
-		"get", &ReturnObject::get
+	state.new_usertype<TestClass>("TestClass",
+		"set", &TestClass::set,
+		"get", &TestClass::get
 		);
 	state["object_function"] = &object_function;
 	state["object_compare"] = &object_compare;
-	state.script(lua_code());
+	state.script(lua_code);
 }
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END

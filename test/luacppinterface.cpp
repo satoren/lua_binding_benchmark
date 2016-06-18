@@ -1,20 +1,19 @@
-
 #include <functional>
 #include <iostream>
+
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+}
+
 #include <luacppinterface.h>
 
-#include "../benchmark.hpp"
+#include "benchmark/benchmark.hpp"
 
-void binding_begin()
-{
-}
-void binding_end()
-{
-}
-const char* binding_name()
-{
-	return "luacppinterface";
-}
+BENCHMARK_DEFINE_LIBRARY_NAME("luacppinterface")
+
+
 namespace
 {
 	//luacppinterface is bracket operator not supported
@@ -71,104 +70,81 @@ namespace
 			return v;
 		}
 	};
-
-	struct LuaFunctionWrap {
-		LuaFunction<std::string(std::string)> fx;
-		LuaFunctionWrap(LuaTable table) : fx(table.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name())) {
-		}
-
-		std::string operator() (std::string x) {
-			return fx.Invoke(x);
-		}
-	};
 }
 
-void binding_global_table()
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
 	GlobalTableWrap tablewrap(global);
-	Benchmark::global_table(tablewrap);
+	benchmark_exec(tablewrap);
 }
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-
-void binding_table_chain()
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
 	lua.RunScript("t1={t2={t3={}}}");
 	LuaTableWrap tablewrap(global);
-	Benchmark::table_chain_access(tablewrap);
+	benchmark_exec(tablewrap);
 }
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
 
-void binding_native_function_call()
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-	auto native_function = lua.CreateFunction<int(int)>(&Benchmark::native_function);
+	auto fn = lua.CreateFunction<int(int)>(&native_function);
 
-	global.Set("native_function", native_function);
-	lua.RunScript(Benchmark::native_function_lua_code());
+	global.Set("native_function", fn);
+	lua.RunScript(lua_code);
 }
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-
-void binding_lua_function_call()
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-	LuaFunction<std::string(std::string)> fx = global.Get<LuaFunction<std::string(std::string)>>(Benchmark::lua_function_name());
-	lua.RunScript(Benchmark::register_lua_function_lua_code());
-	LuaFunctionWrap f(global);
-	Benchmark::lua_function_call(f);
+	lua.RunScript(register_lua_function_code);
+	LuaFunction<std::string(std::string)> fx = global.Get<LuaFunction<std::string(std::string)>>(lua_function_name);
+
+	benchmark_exec([&](std::string x) {
+		return fx.Invoke(x); 
+	});
 }
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_object_set_get()
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 {
-
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-	auto SetGet = lua.CreateUserdata<Benchmark::SetGet>(new Benchmark::SetGet());
-	SetGet.Bind("set", &Benchmark::SetGet::set);
-	SetGet.Bind("get", &Benchmark::SetGet::get);
+	auto SetGet = lua.CreateUserdata(new TestClass());
+	SetGet.Bind("set", &TestClass::set);
+	SetGet.Bind("get", &TestClass::get);
 
 	global.Set("getset", SetGet);
 
-	lua.RunScript(Benchmark::object_set_get_lua_code());
+	lua.RunScript(lua_code);
 }
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-struct object_function_wrap
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
-	Lua& lua;
-	object_function_wrap(Lua& l) :lua(l) {}
-	LuaUserdata<Benchmark::returning_class_object::ReturnObject> operator()()
-	{
-		using namespace Benchmark::returning_class_object;
-		auto retobj = lua.CreateUserdata<ReturnObject>(new ReturnObject(object_function()));
-		retobj.Bind("set", &ReturnObject::set);
-		retobj.Bind("get", &ReturnObject::get);
-		return retobj;
-	}
-};
-
-struct object_compare_wrap
-{
-	bool operator()(LuaUserdata<Benchmark::returning_class_object::ReturnObject> userdata)
-	{
-		return object_compare(*userdata.GetPointer());
-	}
-};
-
-void binding_returning_object()
-{
-	using namespace Benchmark::returning_class_object;
-
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-	auto object_f = lua.CreateFunction<LuaUserdata<ReturnObject>()>(object_function_wrap(lua));
+	auto object_f = lua.CreateFunction<LuaUserdata<TestClass>()>([&] {
+		auto retobj = lua.CreateUserdata<TestClass>(new TestClass(object_function()));
+		retobj.Bind("set", &TestClass::set);
+		retobj.Bind("get", &TestClass::get);
+		return retobj; });
 	global.Set("object_function", object_f);
 
-	auto object_compare_f = lua.CreateFunction<bool(LuaUserdata<ReturnObject>)>(object_compare_wrap());
+	auto object_compare_f = lua.CreateFunction<bool(LuaUserdata<TestClass>)>([](LuaUserdata<TestClass> userdata)
+	{
+		return object_compare(*userdata.GetPointer());
+	});
 	global.Set("object_compare", object_compare_f);
-	lua.RunScript(lua_code());
-
+	lua.RunScript(lua_code);
 }
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END

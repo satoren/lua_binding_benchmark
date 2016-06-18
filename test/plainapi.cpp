@@ -1,19 +1,12 @@
-
-#include "../benchmark.hpp"
-
-void binding_begin()
-{
-}
-void binding_end()
-{
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 }
 
-const char* binding_name()
-{
-	return "plain api";
-}
+#include "benchmark/benchmark.hpp"
 
-
+BENCHMARK_DEFINE_LIBRARY_NAME("plain api")
 
 struct GlobalTable
 {
@@ -36,21 +29,12 @@ struct GlobalTable
 	operator int()
 	{
 		lua_getglobal(state_, current_key);
-		int v = static_cast<int>(lua_tonumber(state_, -1));
+		int v = static_cast<int>(lua_tointeger(state_, -1));
 		lua_settop(state_, 0);
 		current_key = 0;
 		return v;
 	}
 };
-void binding_global_table()
-{
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-
-	GlobalTable t(state);
-	Benchmark::global_table(t);
-	lua_close(state);
-}
-
 
 
 struct TableChain
@@ -83,72 +67,22 @@ struct TableChain
 	operator int()
 	{
 		lua_getfield(state_, -1, current_key);
-		int v = static_cast<int>(lua_tonumber(state_, -1));
+		int v = static_cast<int>(lua_tointeger(state_, -1));
 		lua_settop(state_, 0);
 		current_key = 0;
 		return v;
 	}
 };
-void binding_table_chain()
+
+typedef int bind_function_type(int);
+template<bind_function_type F>
+int native_function_binding(lua_State* L)
 {
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-	luaL_dostring(state, "t1={t2={t3={}}}");
-	TableChain t(state);
-	Benchmark::table_chain_access(t);
-	lua_close(state);
-}
-
-
-
-int static_native_function_binding(lua_State* L)
-{
-	int arg = lua_tonumber(L, 1);
-	int result = Benchmark::native_function(arg);
-	lua_pushnumber(L, result);
+	int arg = static_cast<int>(lua_tointeger(L, 1));
+	int result = F(arg);
+	lua_pushinteger(L, result);
 	return 1;
 }
-void binding_native_function_call()
-{
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-	lua_pushcclosure(state, static_native_function_binding, 0);
-	lua_setglobal(state, "native_function");
-
-	luaL_dostring(state, Benchmark::native_function_lua_code());
-	lua_close(state);
-}
-
-struct FunctionWrap
-{
-	lua_State *state_;
-	int ref_;
-
-	FunctionWrap(lua_State *state, int ref) :state_(state), ref_(ref)
-	{
-	}
-
-	std::string operator()(const std::string& v)
-	{
-		lua_rawgeti(state_, LUA_REGISTRYINDEX, ref_);
-		lua_pushstring(state_, v.c_str());
-		lua_pcall(state_, 1, 1, 0);
-		std::string result{ lua_tostring(state_,-1) };
-		lua_settop(state_, 0);
-		return result;
-	}
-};
-
-void binding_lua_function_call()
-{
-	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-	luaL_dostring(state, Benchmark::register_lua_function_lua_code());
-
-	lua_getglobal(state, Benchmark::lua_function_name());
-	FunctionWrap f(state, luaL_ref(state, LUA_REGISTRYINDEX));
-	Benchmark::lua_function_call(f);
-
-	lua_close(state);
-}
-
 
 
 //not available luaL_setmetatable and luaL_setfuncs at Lua5.1
@@ -163,139 +97,187 @@ void setfuncs(lua_State *L, const luaL_Reg *l) {
 	}
 }
 
-int setget_new(lua_State* L)
-{
-	void* ptr = lua_newuserdata(L, sizeof(Benchmark::SetGet));
-	new(ptr) Benchmark::SetGet();
-	setmetatable(L, "SetGet");
-	return 1;
-}
-int setget_set(lua_State* L)
-{
-	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
-	setget->set(lua_tonumber(L, 2));
-	return 0;
-}
-int setget_get(lua_State* L)
-{
-	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
-	lua_pushnumber(L, setget->get());
-	return 1;
-}
-int setget_gc(lua_State* L)
-{
-	Benchmark::SetGet* setget = static_cast<Benchmark::SetGet*>(luaL_checkudata(L, 1, "SetGet"));
-	setget->~SetGet();
-	return 0;
-}
 
 
-void binding_object_set_get()
+
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-
-	luaL_newmetatable(state, "SetGet");
-	luaL_Reg funcs[] =
 	{
-		{ "new",setget_new },
-		{ "__gc",setget_gc },
-		{ 0 ,0 },
-	};
-	setfuncs(state, funcs);
-	lua_newtable(state);
-	luaL_Reg indexfuncs[] =
-	{
-		{ "set",setget_set },
-		{ "get",setget_get },
-		{ 0 ,0 },
-	};
-	setfuncs(state, indexfuncs);
-	lua_setfield(state, -2, "__index");
-
-
-	lua_setglobal(state, "SetGet");
-
-	luaL_dostring(state, "getset = SetGet.new()");
-	luaL_dostring(state, Benchmark::object_set_get_lua_code());
-
+		GlobalTable t(state);
+		benchmark_exec(t);
+	}
 	lua_close(state);
 }
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-
-int retobj_set(lua_State* L)
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
-	using namespace Benchmark::returning_class_object;
-	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
-	obj->set(lua_tonumber(L, 2));
-	return 0;
-}
-int retobj_get(lua_State* L)
-{
-	using namespace Benchmark::returning_class_object;
-	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
-	lua_pushnumber(L, obj->get());
-	return 1;
-}
-
-int retobj_gc(lua_State* L)
-{
-	using namespace Benchmark::returning_class_object;
-	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
-	obj->~ReturnObject();
-	return 1;
-}
-
-
-int object_function_bind(lua_State* L)
-{
-	using namespace Benchmark::returning_class_object;
-
-	void* ptr = lua_newuserdata(L, sizeof(ReturnObject));
-	new(ptr) ReturnObject(object_function());
-	setmetatable(L, "ReturnObject");
-	return 1;
-}
-
-int object_compare_bind(lua_State* L)
-{
-	using namespace Benchmark::returning_class_object;
-	ReturnObject* obj = static_cast<ReturnObject*>(luaL_checkudata(L, 1, "ReturnObject"));
-	bool result = object_compare(*obj);
-	lua_pushboolean(L, result);
-	return 1;
-}
-
-void binding_returning_object()
-{
-	using namespace Benchmark::returning_class_object;
-
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
-
-	luaL_newmetatable(state, "ReturnObject");
-	luaL_Reg funcs[] =
 	{
-		{ "__gc",retobj_gc },
-		{ 0 ,0 },
-	};
-	setfuncs(state, funcs);
-	lua_newtable(state);
-	luaL_Reg indexfuncs[] =
-	{
-		{ "set",retobj_set },
-		{ "get",retobj_get },
-		{ 0 ,0 },
-	};
-	setfuncs(state, indexfuncs);
-	lua_setfield(state, -2, "__index");
-
-
-	lua_pushcclosure(state, object_function_bind, 0);
-	lua_setglobal(state, "object_function");
-	lua_pushcclosure(state, object_compare_bind, 0);
-	lua_setglobal(state, "object_compare");
-
-	luaL_dostring(state, lua_code());
-
+		luaL_dostring(state, "t1={t2={t3={}}}");
+		TableChain t(state);
+		benchmark_exec(t);
+	}
 	lua_close(state);
-
 }
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
+
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		lua_pushcclosure(state, native_function_binding<native_function>, 0);
+		lua_setglobal(state, "native_function");
+		luaL_dostring(state, lua_code);
+	}
+	lua_close(state);
+}
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
+
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		luaL_dostring(state, register_lua_function_code);
+		lua_getglobal(state, lua_function_name);
+
+
+		int ref = luaL_ref(state, LUA_REGISTRYINDEX);
+		auto fn = [&](const std::string& s) {
+			lua_rawgeti(state, LUA_REGISTRYINDEX, ref);
+			lua_pushstring(state, s.c_str());
+			lua_pcall(state, 1, 1, 0);
+			std::string result{ lua_tostring(state,-1) };
+			lua_settop(state, 0);
+			return result;
+		};
+		benchmark_exec(fn);
+	}
+	lua_close(state);
+}
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
+
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		auto newf = [](lua_State* L) {
+			void* ptr = lua_newuserdata(L, sizeof(TestClass));
+			new(ptr) TestClass();
+			setmetatable(L, "TestClass");
+			return 1;
+		};
+		auto setf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			setget->set(lua_tonumber(L, 2));
+			return 0;
+		};
+		auto getf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			lua_pushnumber(L, setget->get());
+			return 1;
+		};
+		auto gcf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			setget->~TestClass();
+			return 0;
+		};
+
+		luaL_newmetatable(state, "TestClass");
+		luaL_Reg funcs[] =
+		{
+			{ "new", newf },
+			{ "__gc",gcf },
+			{ 0 ,0 },
+		};
+		setfuncs(state, funcs);
+		lua_newtable(state);
+		luaL_Reg indexfuncs[] =
+		{
+			{ "set",setf },
+			{ "get",getf },
+			{ 0 ,0 },
+		};
+		setfuncs(state, indexfuncs);
+		lua_setfield(state, -2, "__index");
+
+
+		lua_setglobal(state, "TestClass");
+		luaL_dostring(state, "getset = TestClass.new()");
+		luaL_dostring(state, lua_code);
+
+	}
+	lua_close(state);
+}
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
+
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
+{
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		auto newf = [](lua_State* L) {
+			void* ptr = lua_newuserdata(L, sizeof(TestClass));
+			new(ptr) TestClass();
+			setmetatable(L, "TestClass");
+			return 1;
+		};
+		auto setf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			setget->set(lua_tonumber(L, 2));
+			return 0;
+		};
+		auto getf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			lua_pushnumber(L, setget->get());
+			return 1;
+		};
+		auto gcf = [](lua_State* L) {
+			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			setget->~TestClass();
+			return 0;
+		};
+		luaL_newmetatable(state, "TestClass");
+		luaL_Reg funcs[] =
+		{
+			{ "new", newf },
+			{ "__gc",gcf },
+			{ 0 ,0 },
+		};
+		setfuncs(state, funcs);
+		lua_newtable(state);
+		luaL_Reg indexfuncs[] =
+		{
+			{ "set",setf },
+			{ "get",getf },
+			{ 0 ,0 },
+		};
+		setfuncs(state, indexfuncs);
+		lua_setfield(state, -2, "__index");
+
+		auto objf = [](lua_State* L)
+		{
+			void* ptr = lua_newuserdata(L, sizeof(TestClass));
+			new(ptr) TestClass(object_function());
+			setmetatable(L, "TestClass");
+			return 1;
+		};
+		auto objcomp = [](lua_State*  L)
+		{
+			TestClass* obj = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			bool result = object_compare(*obj);
+			lua_pushboolean(L, result);
+			return 1;
+		};
+
+		lua_pushcclosure(state, objf, 0);
+		lua_setglobal(state, "object_function");
+		lua_pushcclosure(state, objcomp, 0);
+		lua_setglobal(state, "object_compare");
+
+		luaL_dostring(state, lua_code);
+
+	}
+	lua_close(state);
+}
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END

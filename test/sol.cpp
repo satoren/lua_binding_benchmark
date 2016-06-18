@@ -1,46 +1,63 @@
-#include "../benchmark.hpp"
-
-
 #if LUA_VERSION_NUM > 502
 #define lua_tounsigned lua_tointeger
 #endif
-
 #include "sol.hpp"
 
+#include "benchmark/benchmark.hpp"
 
-void binding_begin()
-{
-}
-void binding_end()
-{
-}
-const char* binding_name()
-{
-	return "sol";
-}
+BENCHMARK_DEFINE_LIBRARY_NAME("sol")
 
-void binding_global_table()
+struct TableWrap
 {
-	sol::state state;
-	Benchmark::global_table(state);
-}
-
-void binding_table_chain()
-{
-	sol::state state;
-	state.script("t1={t2={t3={}}}");
-	// Adding the test here to just have comparison numbers up anyways
-	Benchmark::executed = true;
-	for (int i = 0; i < BENCHMARK_LOOP_COUNT; ++i)
+	sol::state& state_;
+	std::vector<const char*> keys_;
+	TableWrap(sol::state& state) :state_(state) {}
+	TableWrap& operator[](const char* key)
 	{
-		sol::table t1s = state["t1"].get<sol::table>();
-		t1s["value"] = i;
-		sol::table t1g = state["t1"].get<sol::table>();
-		int v = t1g["value"];
-		if (v != i) { throw std::logic_error(""); }
+		keys_.push_back(key);
+		return *this;
 	}
-}
 
+	int operator=(int value)
+	{
+		if (keys_.empty())
+		{
+			return 0;
+		}
+		if (keys_.size() == 1)
+		{
+			state_.set(keys_.front(), value);
+			return value;
+		}
+		sol::table tbl = state_[keys_.front()];
+		for (size_t i = 1; i<keys_.size() - 1; ++i)
+		{
+			tbl = tbl[keys_[i]];
+		}
+		tbl.set(keys_.back(), value);
+		keys_.clear();
+		return value;
+	}
+	operator int()
+	{
+		if (keys_.empty())
+		{
+			return 0;
+		}
+		if (keys_.size() == 1)
+		{
+			return state_[keys_.front()];
+		}
+		sol::table tbl= state_[keys_.front()];
+		for (size_t i = 1; i<keys_.size() - 1; ++i)
+		{
+			tbl = tbl[keys_[i]];
+		}
+		int v = tbl.get<int>(keys_.back());
+		keys_.clear();
+		return v;
+	}
+};
 struct FunctionWrap
 {
 	sol::function f_;
@@ -55,42 +72,60 @@ struct FunctionWrap
 };
 
 
-void binding_lua_function_call()
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	state.script(Benchmark::register_lua_function_lua_code());
+	benchmark_exec(state);
+}
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-	sol::function f = state["lua_function"];
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
+{
+	sol::state state;
+	state.script("t1={t2={t3={}}}");
+	TableWrap table(state);
+	benchmark_exec(table);
+}
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
+
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
+	sol::state state;
+	state.set_function("native_function", native_function);
+	state.script(lua_code);
+}
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
+
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
+	sol::state state;
+	state.script(register_lua_function_code);
+
+	sol::function f = state[lua_function_name];
 	FunctionWrap fwrap(f);
-	Benchmark::lua_function_call(fwrap);
+	benchmark_exec(fwrap);
 }
-void binding_native_function_call()
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
+
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-
-	state.set_function("native_function", Benchmark::native_function);
-	state.script(Benchmark::native_function_lua_code());
+	state.new_usertype<TestClass>("TestClass", "set", &TestClass::set, "get", &TestClass::get);
+	state.script("getset = TestClass.new()");
+	state.script(lua_code);
 }
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-
-void binding_object_set_get()
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	state.new_usertype<Benchmark::SetGet>("SetGet", "set", &Benchmark::SetGet::set, "get", &Benchmark::SetGet::get);
-	state.script("getset = SetGet.new()");
-	state.script(Benchmark::object_set_get_lua_code());
-}
-
-
-void binding_returning_object()
-{
-	using namespace Benchmark::returning_class_object;
-	sol::state state;
-	state.new_usertype<ReturnObject>("ReturnObject",
-		"set", &ReturnObject::set,
-		"get", &ReturnObject::get
+	state.new_usertype<TestClass>("TestClass",
+		"set", &TestClass::set,
+		"get", &TestClass::get
 		);
 	state["object_function"] = &object_function;
 	state["object_compare"] = &object_compare;
-	state.script(lua_code());
+	state.script(lua_code);
 }
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
+

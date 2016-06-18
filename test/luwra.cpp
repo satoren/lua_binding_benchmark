@@ -1,72 +1,79 @@
-#include "../benchmark.hpp"
 #include <luwra.hpp>
+#include "benchmark/benchmark.hpp"
 
-void binding_begin() {}
 
-void binding_end() {}
+BENCHMARK_DEFINE_LIBRARY_NAME("luwra")
 
-const char* binding_name() {
-	return "luwra";
-}
 
-void binding_global_table() {
+GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
+{
 	luwra::StateWrapper state;
 	state.loadStandardLibrary();
 
-	Benchmark::global_table(state);
+	benchmark_exec(state);
 }
+GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 
-void binding_table_chain() {
+TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
+{
 	luwra::StateWrapper state;
 	state.runString("t1={t2={t3={}}}");
 
-	Benchmark::table_chain_access(state);
+	benchmark_exec(state);
 }
+TABLE_CHAIN_BENCHMARK_FUNCTION_END
 
-void binding_native_function_call() {
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
 	luwra::StateWrapper state;
 
-	state["native_function"] = LUWRA_WRAP(Benchmark::native_function);
-	state.runString(Benchmark::native_function_lua_code());
+	state["native_function"] = LUWRA_WRAP(native_function);
+	state.runString(lua_code);
+
 }
+C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_lua_function_call() {
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
+{
 	luwra::StateWrapper state;
-	state.runString(Benchmark::register_lua_function_lua_code());
+	state.runString(register_lua_function_code);
 
-	luwra::NativeFunction<std::string> func = state[Benchmark::lua_function_name()];
-	Benchmark::lua_function_call(func);
+	luwra::NativeFunction<std::string> func = state[lua_function_name];
+	benchmark_exec(func);
 }
+LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 
-void binding_object_set_get() {
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
+{
 	luwra::StateWrapper state;
 
-	state.registerUserType<Benchmark::SetGet()>(
-		"SetGet",
+	state.registerUserType<TestClass()>(
+		"TestClass",
 		{
-			LUWRA_MEMBER(Benchmark::SetGet, set),
-			LUWRA_MEMBER(Benchmark::SetGet, get)
+			LUWRA_MEMBER(TestClass, set),
+			LUWRA_MEMBER(TestClass, get)
 		}
 	);
 
-	state.runString("getset = SetGet()");
-	state.runString(Benchmark::object_set_get_lua_code());
+	state.runString("getset = TestClass()");
+	state.runString(lua_code);
 }
+OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-void binding_returning_object()
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
-	using namespace Benchmark::returning_class_object;
 	luwra::StateWrapper state;
 
-	state.registerUserType<ReturnObject()>(
-		"ReturnObject",
+	state.registerUserType<TestClass()>(
+		"TestClass",
 		{
-			LUWRA_MEMBER(ReturnObject, set),
-			LUWRA_MEMBER(ReturnObject, get)
+			LUWRA_MEMBER(TestClass, set),
+			LUWRA_MEMBER(TestClass, get)
 		}
 	);
 
 	state["object_function"] = LUWRA_WRAP(object_function);
 	state["object_compare"] = LUWRA_WRAP(object_compare);
-	state.runString(lua_code());
+	state.runString(lua_code);
 }
+RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
