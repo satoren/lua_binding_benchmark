@@ -134,6 +134,7 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
 	auto object_f = lua.CreateFunction<LuaUserdata<TestClass>()>([&] {
+		lua.CollectGarbage();//Memory use over 2GB. Like a memory leak
 		auto retobj = lua.CreateUserdata<TestClass>(new TestClass(object_function()));
 		retobj.Bind("set", &TestClass::set);
 		retobj.Bind("get", &TestClass::get);
