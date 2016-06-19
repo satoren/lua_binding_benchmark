@@ -130,7 +130,6 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
-
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
 	{
 		LuaIntf::LuaBinding(state)

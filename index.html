@@ -115,12 +115,12 @@ function add_graphs(parent,arraydata)
     var options = {
       title: arraydata[0][i],
       chartArea: {'width':'70%', 'height':'65%', 'left':150 },
-      hAxis: { title:'Time[s] (ms)', titleTextStyle:{italic:false} },
+      hAxis: { title:'Time[s] (ms), Less Is Better',minValue: 0, titleTextStyle:{italic:false} },
       vAxis: { title:arraydata[0][0],  titleTextStyle:{italic:false} },
       crosshair: { trigger: 'both' }
     };
     var data =[];
-    data.push(['library','score'])
+    data.push(['library','Milliseconds'])
 
   	for (var li = 1; li < libnum+1;++li) {
       var c = [];
