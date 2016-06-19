@@ -77,3 +77,34 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 	state.runString(lua_code);
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
+
+/*
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+	luwra::StateWrapper state;
+
+
+	state.registerUserType<std::mt19937(int)>(
+		"random_mt19937",
+		{
+			{ "gen", LUWRA_WRAP(std::mt19937::operator()) }
+		}
+	);
+
+	typedef std::uniform_int_distribution<int> uni_int_dist;
+
+
+//	typedef int (uni_int_dist::*generate_function_type)(std::mt19937&);
+//	generate_function_type generate_function = static_cast<int (uni_int_dist::*)(std::mt19937&)>(&uni_int_dist::operator()<std::mt19937>);
+	auto generate_function = [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); };
+	state.registerUserType<uni_int_dist(int,int)>(
+		"random_uniform_int_distribution",
+		{
+			{ "gen", LUWRA_WRAP(generate_function) }
+		}
+	);
+	state.runString("random={mt19937=random_mt19937,uniform_int_distribution = random_uniform_int_distribution}");
+	state.runString(call_constructor_version_lua_code);
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+*/

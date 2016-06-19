@@ -67,7 +67,7 @@ open build/lua_binding_benchmark.sln and build 'execute_benchmark' project
 
 ```lua
   -- lua
-	local times = 1000000
+	local times = 5000000
 	for i=1,times do
 	local r = native_function(i)
 	if(r ~= i)then
@@ -113,11 +113,27 @@ lua_function=function(i)return i;end
 
 ```lua
   -- lua
-local times = 1000000
+local times = 5000000
 for i=1,times do
-getset:set(i)
-if(getset:get() ~= i)then
-error('error')
+  getset:set(i)
+  if(getset:get() ~= i)then
+    error('error')
+  end
 end
+```
+
+* std random(C++11) bind
+```lua
+-- lua
+local times = BENCHMARK_LOOP_COUNT
+local rengine=random.mt19937.new(0)
+if(rengine() ~= 2357136044) then error('mt19937?') end
+local udist=random.uniform_int_distribution.new(1,6)
+if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end --ouch! argument miss. error check
+  for i=1,times do
+  local value = udist(rengine)
+  if( value < 1 or value > 6)then
+    error('error')
+  end
 end
 ```

@@ -9,6 +9,7 @@
 #include "lua_function_call.hpp"
 #include "object_member_call.hpp"
 #include "return_class_object.hpp"
+#include "std_random_bind.hpp"
 
 class file_and_std_ostream
 {
@@ -40,7 +41,8 @@ int main(int argc, const char* argv[])
 		"c function call",
 		"lua function call",
 		"C++ object member call",
-		"Returning a class object"
+		"Returning a class object",
+		"std random(C++11) bind"
 	};
 
 

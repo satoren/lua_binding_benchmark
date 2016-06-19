@@ -61,3 +61,31 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 	state(lua_code);
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
+
+
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+	kaguya::State state;
+    
+	kaguya::LuaTable random = state.newTable();
+
+	random["mt19937"].setClass(kaguya::UserdataMetatable<std::mt19937>()
+	.setConstructors<std::mt19937(int)>()
+		.addFunction("__call", &std::mt19937::operator())
+	);
+
+	typedef std::uniform_int_distribution<int> uni_int_dist;
+	
+//	typedef int (uni_int_dist::*generate_function_type)(std::mt19937&);
+//	generate_function_type generate_function = static_cast<int (uni_int_dist::*)(std::mt19937&)>(&uni_int_dist::operator()<std::mt19937>);
+	random["uniform_int_distribution"].setClass(kaguya::UserdataMetatable<uni_int_dist>()
+		.setConstructors<uni_int_dist(), uni_int_dist(int), uni_int_dist(int, int)>()
+//		.addFunction("__call", generate_function)
+		.addStaticFunction("__call", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); })
+		);
+
+	state["random"] = random;
+
+	state.dostring(lua_code);
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END

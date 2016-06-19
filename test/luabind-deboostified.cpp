@@ -123,3 +123,36 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 	lua_close(L);
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
+
+
+#ifndef _MSC_VER
+//can not compile at MSVC++2015 update 2
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+
+	lua_State *L = luaL_newstate(); luaL_openlibs(L);
+	{
+		using namespace luabind;
+		open(L);
+
+		typedef std::uniform_int_distribution<int> uni_int_dist;
+
+		//can not compile at MSVC++2015 update 2
+		typedef int (uni_int_dist::*generate_function_type)(std::mt19937&);
+		generate_function_type generate_function = static_cast<generate_function_type>(&uni_int_dist::operator()<std::mt19937>);
+
+		module(L, "random")
+			[
+				class_<std::mt19937>("mt19937")
+				.def(constructor<int>())
+				.def("gen", &std::mt19937::operator()),
+				class_<uni_int_dist>("uniform_int_distribution")
+				.def(constructor<int,int>())
+				.def("gen", generate_function)
+			];
+		luaL_dostring(L, call_constructor_version_lua_code);
+	}
+	lua_close(L);
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+#endif
