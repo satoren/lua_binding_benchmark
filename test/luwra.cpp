@@ -78,11 +78,18 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
-/*
+
+int generate_function(std::uniform_int_distribution<int>& dist, std::mt19937& gen)
+{
+	return dist(gen);
+}
+
+#ifndef _MSC_VER
+//can not compile at MSVC++2015 update 2
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
-
+	state.loadStandardLibrary();
 
 	state.registerUserType<std::mt19937(int)>(
 		"random_mt19937",
@@ -96,10 +103,10 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 
 //	typedef int (uni_int_dist::*generate_function_type)(std::mt19937&);
 //	generate_function_type generate_function = static_cast<int (uni_int_dist::*)(std::mt19937&)>(&uni_int_dist::operator()<std::mt19937>);
-	auto generate_function = [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); };
+//	auto generate_function = [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); };
 	state.registerUserType<uni_int_dist(int,int)>(
-		"random_uniform_int_distribution",
-		{
+		"random_uniform_int_distribution",	{
+
 			{ "gen", LUWRA_WRAP(generate_function) }
 		}
 	);
@@ -107,4 +114,4 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	state.runString(call_constructor_version_lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-*/
+#endif
