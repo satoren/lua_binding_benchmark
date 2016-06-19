@@ -127,3 +127,29 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
+
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+
+	lua_State *state = luaL_newstate(); luaL_openlibs(state);
+	{
+		LuaIntf::LuaBinding(state)
+			.beginModule("random")
+				.beginClass<std::mt19937>("mt19937")
+				.addConstructor(LUA_ARGS(int))
+				.addFunction("gen", &std::mt19937::operator())
+				.endClass();
+
+		typedef std::uniform_int_distribution<int> uni_int_dist;
+		LuaIntf::LuaBinding(state)
+			.beginModule("random")
+			.beginClass<uni_int_dist>("uniform_int_distribution")
+			.addConstructor(LUA_ARGS(int,int))
+			.addMetaFunction("gen", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); })
+			.endClass();
+		
+		luaL_dostring(state, call_constructor_version_lua_code);
+	}
+	lua_close(state);
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
