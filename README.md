@@ -130,7 +130,7 @@ local rengine=random.mt19937.new(0)
 if(rengine() ~= 2357136044) then error('mt19937?') end
 local udist=random.uniform_int_distribution.new(1,6)
 if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end --ouch! argument miss. error check
-  for i=1,times do
+for i=1,times do
   local value = udist(rengine)
   if( value < 1 or value > 6)then
     error('error')
