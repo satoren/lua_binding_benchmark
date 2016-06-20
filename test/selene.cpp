@@ -58,3 +58,21 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
+
+//#ifndef _MSC_VER
+//can not compile at MSVC++2015 update 2
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+	sel::State state(true);
+	auto random = state["random"];
+	random["mt19937"].SetClass<std::mt19937,int>("__call", &std::mt19937::operator());
+
+	typedef std::uniform_int_distribution<int> uni_int_dist;
+	typedef std::uniform_int_distribution<int>::result_type (uni_int_dist::*generate_function_type)(std::mt19937&)const;
+	generate_function_type generate_function = static_cast<generate_function_type>(&uni_int_dist::operator()<std::mt19937>);
+	random["uniform_int_distribution"].SetClass<uni_int_dist, int,int>("__call", generate_function);
+
+	state(lua_code);
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+//#endif
