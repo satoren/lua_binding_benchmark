@@ -362,6 +362,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 			lua_newtable(L);
 			luaL_Reg indexfuncs[] =
 			{
+				{ "__call",callf },
 				{ 0 ,0 },
 			};
 			setfuncs(L, indexfuncs);
@@ -403,6 +404,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 			lua_newtable(L);
 			luaL_Reg indexfuncs[] =
 			{
+				{ "__call",callf },
 				{ 0 ,0 },
 			};
 			setfuncs(L, indexfuncs);
