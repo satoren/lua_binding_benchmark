@@ -129,13 +129,12 @@ OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 }
 OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 
-/*
+/*//Memory use over 2GB. Like a memory leak
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
 	auto object_f = lua.CreateFunction<LuaUserdata<TestClass>()>([&] {
-		lua.CollectGarbage();//Memory use over 2GB. Like a memory leak
 		auto retobj = lua.CreateUserdata<TestClass>(new TestClass(object_function()));
 		retobj.Bind("set", &TestClass::set);
 		retobj.Bind("get", &TestClass::get);
@@ -151,3 +150,47 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 */
+
+
+/* //do not work
+// * '__call' is not worked.
+// * no typecheck.
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
+{
+	Lua lua;
+	lua.LoadStandardLibraries();
+	LuaTable global = lua.GetGlobalEnvironment();
+
+	lua.RunScript("random={mt19937={},uniform_int_distribution={}}");
+	LuaTable random = global.Get<LuaTable>("random");
+	LuaTable uniform_int_distribution_table = random.Get<LuaTable>("uniform_int_distribution");
+	LuaTable mt19937_table = random.Get<LuaTable>("mt19937");
+
+	auto mt19937_new = lua.CreateFunction<LuaUserdata<std::mt19937>(int)>([&](int seed) {
+		auto retobj = lua.CreateUserdata<std::mt19937>(new std::mt19937(seed));
+		retobj.Bind("__call", &std::mt19937::operator());//fixme
+		return retobj;
+	});
+	mt19937_table.Set("new", mt19937_new);
+
+	typedef std::uniform_int_distribution<int> uni_int_dist;
+	auto uniform_int_distribution_new = lua.CreateFunction<LuaUserdata<uni_int_dist>(int,int)>([&](int min,int max) {
+		auto call_function = lua.CreateFunction<int(LuaUserdata<uni_int_dist>, LuaUserdata<std::mt19937>)>(
+			[](LuaUserdata<uni_int_dist>& distudata, LuaUserdata<std::mt19937>& engudata) 
+				{
+					uni_int_dist* dist = distudata.GetPointer();
+					std::mt19937* gen = engudata.GetPointer();
+					if (!dist || !gen) { throw "error"; }
+					return (*dist)(*gen);
+				});
+		auto retobj = lua.CreateUserdata<uni_int_dist>(new uni_int_dist(min,max));
+		retobj.Set("__call", call_function);//fixme
+		return retobj;
+	});
+	uniform_int_distribution_table.Set("new", uniform_int_distribution_new);
+
+	std::string error = lua.RunScript(lua_code);
+//	std::cout << error << std::endl;
+}
+STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+//*/
