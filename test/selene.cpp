@@ -59,26 +59,31 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
 
-//don't work at gcc
-//runtime error message: SeleneTried to copy an object of an unregistered type. Please register classes before passing instances by value.
-/*
+struct mt19937_wrap
+{
+	std::mt19937 content;
+	mt19937_wrap(int seed) :content(seed) {}
+	unsigned int generate() {
+		return content();
+	}
+};
+struct uniform_int_distribution_wrap
+{
+	std::uniform_int_distribution<int> content;
+	uniform_int_distribution_wrap(int min,int max) :content(min,max) {}
+	int generate(mt19937_wrap* data) {
+		return content(data->content);
+	}
+};
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state(true);
 	auto random = state["random"];
-	random["mt19937"].SetClass<std::mt19937,int>("__call", &std::mt19937::operator());
-
-	typedef std::uniform_int_distribution<int> uni_int_dist;
-	typedef std::uniform_int_distribution<int>::result_type (uni_int_dist::*generate_function_type)(std::mt19937&)
-#ifdef _MSC_VER
-		const//MSVC bug???
-#endif
-	;
+	random["mt19937"].SetClass<mt19937_wrap,int>("__call", &mt19937_wrap::generate);
 	
-	generate_function_type generate_function = &uni_int_dist::operator();
-	random["uniform_int_distribution"].SetClass<uni_int_dist, int,int>("__call", generate_function);
+	random["uniform_int_distribution"].SetClass<uniform_int_distribution_wrap, int,int>("__call"
+		, &uniform_int_distribution_wrap::generate);
 
 	state(lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-//*/
