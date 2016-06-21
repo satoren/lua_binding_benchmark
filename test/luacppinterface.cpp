@@ -166,7 +166,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	LuaTable uniform_int_distribution_table = random.Get<LuaTable>("uniform_int_distribution");
 	LuaTable mt19937_table = random.Get<LuaTable>("mt19937");
 
-	auto mt19937_new = lua.CreateFunction<LuaUserdata<std::mt19937>(int)>([&](int seed) {
+	auto mt19937_new = lua.CreateFunction<LuaUserdata<std::mt19937>(std::mt19937::result_type)>([&](int seed) {
 		auto retobj = lua.CreateUserdata<std::mt19937>(new std::mt19937(seed));
 		retobj.Bind("__call", &std::mt19937::operator());//fixme
 		return retobj;

@@ -69,7 +69,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	kaguya::LuaTable random = state.newTable();
 
 	random["mt19937"].setClass(kaguya::UserdataMetatable<std::mt19937>()
-		.setConstructors<std::mt19937(int)>()
+		.setConstructors<std::mt19937(std::mt19937::result_type)>()
 		.addFunction("__call", &std::mt19937::operator())
 	);
 

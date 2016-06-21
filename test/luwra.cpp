@@ -85,13 +85,13 @@ int generate_function(std::uniform_int_distribution<int>& dist, std::mt19937& ge
 }
 
 #ifndef _MSC_VER
-//can not compile at MSVC++2015 update 2
+//can not work at MSVC++2015 update 2
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
 	state.loadStandardLibrary();
 
-	state.registerUserType<std::mt19937(int)>(
+	state.registerUserType<std::mt19937(std::mt19937::result_type)>(
 		"random_mt19937",
 		{
 			{ "gen", LUWRA_WRAP(std::mt19937::operator()) }
@@ -106,7 +106,6 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 //	auto generate_function = [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); };
 	state.registerUserType<uni_int_dist(int,int)>(
 		"random_uniform_int_distribution",	{
-
 			{ "gen", LUWRA_WRAP(generate_function) }
 		}
 	);

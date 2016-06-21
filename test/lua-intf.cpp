@@ -135,7 +135,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 		LuaIntf::LuaBinding(state)
 			.beginModule("random")
 				.beginClass<std::mt19937>("mt19937")
-				.addConstructor(LUA_ARGS(int))
+				.addConstructor(LUA_ARGS(std::mt19937::result_type))
 				.addFunction("gen", &std::mt19937::operator())
 				.endClass();
 

@@ -62,7 +62,7 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 struct mt19937_wrap
 {
 	std::mt19937 content;
-	mt19937_wrap(int seed) :content(seed) {}
+	mt19937_wrap(std::mt19937::result_type seed) :content(seed) {}
 	unsigned int generate() {
 		return content();
 	}
