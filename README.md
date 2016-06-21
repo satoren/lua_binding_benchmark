@@ -127,13 +127,30 @@ end
 -- lua
 local times = BENCHMARK_LOOP_COUNT
 local rengine=random.mt19937.new(0)
-if(rengine() ~= 2357136044) then error('mt19937?') end
 local udist=random.uniform_int_distribution.new(1,6)
-if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end --ouch! argument miss. error check
+if(rengine() ~= 2357136044) then error('mt19937?') end
+if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end -- argument miss. error check
+if(pcall(udist.__call,rengine,rengine) ~= false)then error('no error checked') end
 for i=1,times do
-  local value = udist(rengine)
-  if( value < 1 or value > 6)then
-    error('error')
-  end
+	local value = udist:__call(rengine)--Actually below code, but __call metamethod has cost. for fair with "gen" function version.
+--	local value = udist(rengine)
+	if( value < 1 or value > 6)then\
+		error('error')
+	end
+end
+```
+Or
+```lua
+local times = BENCHMARK_LOOP_COUNT
+local rengine=random.mt19937(0)
+local udist=random.uniform_int_distribution(1,6)
+if(rengine:gen() ~= 2357136044) then error('mt19937?') end
+if(pcall(udist.gen,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error ch
+if(pcall(udist.gen,rengine,rengine) ~= false)then error('no error checked') end
+for i=1,times do
+	local value = udist:gen(rengine)
+	if( value < 1 or value > 6)then
+		error('error')
+	end
 end
 ```

@@ -13,7 +13,8 @@ namespace benchmark
 			"if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error check
 			"if(pcall(udist.__call,rengine,rengine) ~= false)then error('no error checked') end\n"
 			"for i=1,times do\n"
-			"local value = udist(rengine)\n"
+			"local value = udist:__call(rengine)\n"//Actually below code, but __call metamethod has cost. for fair with "gen" function version.
+//			"local value = udist(rengine)\n"
 			"if( value < 1 or value > 6)then\n"
 			"error('error')\n"
 			"end\n"
