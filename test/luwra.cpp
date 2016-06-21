@@ -110,6 +110,8 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 			{ "gen", LUWRA_WRAP(generate_function) }
 		}
 	);
+
+	//I want register to random.mt19937 ,random.uniform_int_distribution
 	state.runString("random={mt19937=random_mt19937,uniform_int_distribution = random_uniform_int_distribution}");
 	state.runString(call_constructor_version_lua_code);
 }
