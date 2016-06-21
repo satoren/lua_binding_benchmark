@@ -11,6 +11,7 @@ namespace benchmark
 			"local udist=random.uniform_int_distribution.new(1,6)\n"
 			"if(rengine() ~= 2357136044) then error('mt19937?') end\n"
 			"if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error check
+			"if(pcall(udist.__call,rengine,rengine) ~= false)then error('no error checked') end\n"
 			"for i=1,times do\n"
 			"local value = udist(rengine)\n"
 			"if( value < 1 or value > 6)then\n"
@@ -23,6 +24,7 @@ namespace benchmark
 			"local udist=random.uniform_int_distribution(1,6)\n"
 			"if(rengine:gen() ~= 2357136044) then error('mt19937?') end\n"
 			"if(pcall(udist.gen,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error check
+			"if(pcall(udist.gen,rengine,rengine) ~= false)then error('no error checked') end\n"
 			"for i=1,times do\n"
 			"local value = udist:gen(rengine)\n"
 			"if( value < 1 or value > 6)then\n"
