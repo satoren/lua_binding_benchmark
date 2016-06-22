@@ -136,15 +136,19 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	sol::state lua;
 	lua.open_libraries(sol::lib::base);
 	
-	sol::table random = lua.create_named_table("random");
+	sol::table random = lua.create_table("random");
 	
-	random.new_usertype<std::mt19937,int>("mt19937",
+	sol::usertype<std::mt19937> mtut(
+		"new", sol::constructors<sol::types<int>>(),
 		"__call", &std::mt19937::operator()
 	);
-
-	random.new_usertype<uni_int_dist, int,int>("uniform_int_distribution",
+	random.set_usertype("mt19937", mutut);
+	
+	sol::usertype<uni_int_dist> distmt(
+		"new", sol::constructors<sol::types<int, int>>(),
 		"__call", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); }
 	);
+	random.set_usertype<uni_int_dist>( "uniform_int_distribution", distmt );
 	
 	lua.script(lua_code);
 }
