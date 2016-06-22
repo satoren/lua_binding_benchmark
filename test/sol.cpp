@@ -148,7 +148,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 		"new", sol::constructors<sol::types<int, int>>(),
 		"__call", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); }
 	);
-	random.set_usertype<uni_int_dist>( "uniform_int_distribution", distmt );
+	random.set_usertype( "uniform_int_distribution", distmt );
 	
 	lua.script(lua_code);
 }
