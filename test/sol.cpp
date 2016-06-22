@@ -136,7 +136,8 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	sol::state lua;
 	lua.open_libraries(sol::lib::base);
 	
-	sol::table random = lua.create_table("random");
+	lua.script("random={}");
+	sol::table random = lua["random"];
 	
 	sol::usertype<std::mt19937> mtut(
 		sol::constructors<sol::types<int>>(),
