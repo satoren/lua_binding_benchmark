@@ -142,7 +142,7 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 		sol::constructors<sol::types<int>>(),
 		"__call", &std::mt19937::operator()
 	);
-	random.set_usertype("mt19937", mutut);
+	random.set_usertype("mt19937", mtut);
 	
 	sol::usertype<uni_int_dist> distmt(
 		sol::constructors<sol::types<int, int>>(),
