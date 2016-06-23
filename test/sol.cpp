@@ -5,7 +5,7 @@
 
 #include "benchmark/benchmark.hpp"
 
-BENCHMARK_DEFINE_LIBRARY_NAME("sol")
+BENCHMARK_DEFINE_LIBRARY_NAME("sol(*1)")
 
 struct TableWrap
 {

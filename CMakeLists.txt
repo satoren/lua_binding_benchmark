@@ -42,10 +42,16 @@ set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/sol/)
 
 add_executable(benchmark_sol2 test/sol2.cpp)
+target_compile_definitions(benchmark_sol2 PRIVATE -DSOL_CHECK_ARGUMENTS)
 target_include_directories(benchmark_sol2 PRIVATE binding_libs/sol2)
 target_link_libraries(benchmark_sol2 ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2)
 set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/sol2/)
+
+add_executable(benchmark_sol2_without_typesafe test/sol2.cpp)
+target_include_directories(benchmark_sol2_without_typesafe PRIVATE binding_libs/sol2)
+target_link_libraries(benchmark_sol2_without_typesafe ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_sol2_without_typesafe)
 
 add_executable(benchmark_luwra test/luwra.cpp)
 target_include_directories(benchmark_luwra PRIVATE binding_libs/luwra/lib)
