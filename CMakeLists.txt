@@ -22,6 +22,11 @@ add_executable(benchmark_plainapi test/plainapi.cpp)
 target_link_libraries(benchmark_plainapi ${LUA_LIBRARIES})
 set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_plainapi)
 
+add_executable(benchmark_plainapi_without_typesafe test/plainapi.cpp)
+target_compile_definitions(benchmark_plainapi_without_typesafe PRIVATE -DWITHOUT_TYPESAFE)
+target_link_libraries(benchmark_plainapi_without_typesafe ${LUA_LIBRARIES})
+set(BENCHMARK_BINARIES ${BENCHMARK_BINARIES} benchmark_plainapi_without_typesafe)
+
 
 add_executable(benchmark_kaguya test/kaguya.cpp)
 target_include_directories(benchmark_kaguya PRIVATE binding_libs/kaguya/include)

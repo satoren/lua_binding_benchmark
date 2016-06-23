@@ -6,7 +6,22 @@ extern "C" {
 
 #include "benchmark/benchmark.hpp"
 
+#ifdef WITHOUT_TYPESAFE
+BENCHMARK_DEFINE_LIBRARY_NAME("plain api(*1)")
+#else
 BENCHMARK_DEFINE_LIBRARY_NAME("plain api")
+#endif
+
+
+#ifdef WITHOUT_TYPESAFE
+#define check_userdata(L, INDEX, NAME) lua_touserdata(L, INDEX)
+#define check_integer(L, INDEX) lua_tointeger(L, INDEX)
+#define check_string(L, INDEX) lua_tostring(L, INDEX)
+#else
+#define check_userdata(L, INDEX, NAME) luaL_checkudata(L, INDEX, NAME)
+#define check_integer(L, INDEX) luaL_checkinteger(L, INDEX)
+#define check_string(L, INDEX) luaL_checkstring(L, INDEX)
+#endif
 
 inline void stackDump(lua_State *L) {
 	int i;
@@ -64,7 +79,7 @@ struct GlobalTable
 	operator int()
 	{
 		lua_getglobal(state_, current_key);
-		int v = static_cast<int>(lua_tointeger(state_, -1));
+		int v = static_cast<int>(check_integer(state_, -1));
 		lua_settop(state_, 0);
 		current_key = 0;
 		return v;
@@ -102,7 +117,7 @@ struct TableChain
 	operator int()
 	{
 		lua_getfield(state_, -1, current_key);
-		int v = static_cast<int>(lua_tointeger(state_, -1));
+		int v = static_cast<int>(check_integer(state_, -1));
 		lua_settop(state_, 0);
 		current_key = 0;
 		return v;
@@ -113,7 +128,7 @@ typedef int bind_function_type(int);
 template<bind_function_type F>
 int native_function_binding(lua_State* L)
 {
-	int arg = static_cast<int>(lua_tointeger(L, 1));
+	int arg = static_cast<int>(check_integer(L, 1));
 	int result = F(arg);
 	lua_pushinteger(L, result);
 	return 1;
@@ -183,7 +198,7 @@ LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 			lua_rawgeti(state, LUA_REGISTRYINDEX, ref);
 			lua_pushstring(state, s.c_str());
 			lua_pcall(state, 1, 1, 0);
-			std::string result{ lua_tostring(state,-1) };
+			std::string result{ check_string(state,-1) };
 			lua_settop(state, 0);
 			return result;
 		};
@@ -204,17 +219,17 @@ OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 			return 1;
 		};
 		auto setf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			setget->set(lua_tonumber(L, 2));
 			return 0;
 		};
 		auto getf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			lua_pushnumber(L, setget->get());
 			return 1;
 		};
 		auto gcf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			setget->~TestClass();
 			return 0;
 		};
@@ -258,17 +273,17 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 			return 1;
 		};
 		auto setf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			setget->set(lua_tonumber(L, 2));
 			return 0;
 		};
 		auto getf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			lua_pushnumber(L, setget->get());
 			return 1;
 		};
 		auto gcf = [](lua_State* L) {
-			TestClass* setget = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* setget = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			setget->~TestClass();
 			return 0;
 		};
@@ -299,7 +314,7 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 		};
 		auto objcomp = [](lua_State*  L)
 		{
-			TestClass* obj = static_cast<TestClass*>(luaL_checkudata(L, 1, "TestClass"));
+			TestClass* obj = static_cast<TestClass*>(check_userdata(L, 1, "TestClass"));
 			bool result = object_compare(*obj);
 			lua_pushboolean(L, result);
 			return 1;
@@ -319,6 +334,7 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
 
 
+#ifndef WITHOUT_TYPESAFE
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 #define STD_MT19937_NAME "std.mt19937"
@@ -335,17 +351,17 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 		{
 			auto newf = [](lua_State* L) {
 				void* ptr = lua_newuserdata(L, sizeof(mt19937));
-				new(ptr) mt19937(lua_tointeger(L, 1));
+				new(ptr) mt19937(check_integer(L, 1));
 				setmetatable(L, STD_MT19937_NAME);
 				return 1;
 			};
 			auto callf = [](lua_State* L) {
-				mt19937* mtengine = static_cast<mt19937*>(luaL_checkudata(L, 1, STD_MT19937_NAME));
+				mt19937* mtengine = static_cast<mt19937*>(check_userdata(L, 1, STD_MT19937_NAME));
 				lua_pushinteger(L, (*mtengine)());
 				return 1;
 			};
 			auto gcf = [](lua_State* L) {
-				mt19937* mtengine = static_cast<mt19937*>(luaL_checkudata(L, 1, STD_MT19937_NAME));
+				mt19937* mtengine = static_cast<mt19937*>(check_userdata(L, 1, STD_MT19937_NAME));
 				mtengine->~mt19937();
 				return 0;
 			};
@@ -381,13 +397,13 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 				return 1;
 			};
 			auto callf = [](lua_State* L) {
-				uni_int_dist* dist = static_cast<uni_int_dist*>(luaL_checkudata(L, 1, STD_UNI_INT_DIST_NAME));
-				mt19937* engine = static_cast<mt19937*>(luaL_checkudata(L, 2, STD_MT19937_NAME));
+				uni_int_dist* dist = static_cast<uni_int_dist*>(check_userdata(L, 1, STD_UNI_INT_DIST_NAME));
+				mt19937* engine = static_cast<mt19937*>(check_userdata(L, 2, STD_MT19937_NAME));
 				lua_pushinteger(L, (*dist)(*engine));
 				return 1;
 			};
 			auto gcf = [](lua_State* L) {
-				uni_int_dist* dist = static_cast<uni_int_dist*>(luaL_checkudata(L, 1, STD_UNI_INT_DIST_NAME));
+				uni_int_dist* dist = static_cast<uni_int_dist*>(check_userdata(L, 1, STD_UNI_INT_DIST_NAME));
 				dist->~uni_int_dist();
 				return 0;
 			};
@@ -414,9 +430,9 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 		lua_setglobal(L,"random");
 
 		int ret = luaL_dostring(L,lua_code);
-		if (ret != 0) { printf("%s\n", lua_tostring(L, -1)); }
+		if (ret != 0) { printf("%s\n", check_string(L, -1)); }
 	}
 	lua_close(L);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-
+#endif
