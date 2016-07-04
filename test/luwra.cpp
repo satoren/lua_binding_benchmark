@@ -38,7 +38,7 @@ LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 	luwra::StateWrapper state;
 	state.runString(register_lua_function_code);
 
-	luwra::NativeFunction<std::string> func = state[lua_function_name];
+	luwra::Function<std::string> func = state[lua_function_name];
 	benchmark_exec(func);
 }
 LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
