@@ -2,11 +2,8 @@
 
 #include "benchmark/benchmark.hpp"
 
-#ifdef SOL_CHECK_ARGUMENTS
 BENCHMARK_DEFINE_LIBRARY_NAME("sol2")
-#else
-BENCHMARK_DEFINE_LIBRARY_NAME("sol2(*1)")
-#endif
+
 GLOBAL_TABLE_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
@@ -64,7 +61,6 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 }
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
-#ifdef SOL_CHECK_ARGUMENTS
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 	typedef std::uniform_int_distribution<int> uni_int_dist;
@@ -75,14 +71,13 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	sol::table random = lua.create_named_table("random");
 	
 	random.new_usertype<std::mt19937,int>("mt19937",
-		"__call", &std::mt19937::operator()
+		"__call", sol::protect(&std::mt19937::operator())
 	);
 
 	random.new_usertype<uni_int_dist, int,int>("uniform_int_distribution",
-		"__call", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); }
+		"__call", sol::protect([](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); })
 	);
 	
 	lua.script(lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-#endif
