@@ -109,6 +109,9 @@ namespace benchmark
 		bool execute(const std::vector<std::string>& tests, outtype& out)
 		{
 			out << title_;
+#ifdef BENCHMARK_WITHOUT_TYPESAFE
+			out << "(*1)";
+#endif
 			for (auto name : tests)
 			{
 				result result = execute(name);

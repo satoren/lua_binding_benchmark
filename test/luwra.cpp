@@ -46,6 +46,7 @@ LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
+	state.loadStandardLibrary();
 
 	state.registerUserType<TestClass()>(
 		"TestClass",
@@ -63,6 +64,7 @@ OBJECT_MEMBER_CALL_BENCHMARK_FUNCTION_END
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
+	state.loadStandardLibrary();
 
 	state.registerUserType<TestClass()>(
 		"TestClass",
@@ -84,7 +86,6 @@ int generate_function(std::uniform_int_distribution<int>& dist, std::mt19937& ge
 	return dist(gen);
 }
 
-#ifndef _MSC_VER
 //can not work at MSVC++2015 update 2
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
@@ -115,4 +116,3 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	state.runString(call_constructor_version_lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-#endif

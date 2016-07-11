@@ -26,6 +26,9 @@ namespace benchmark
 
 
 		const char* lua_code = "local times = " BENCHMARK_LOOP_COUNT_STR "\n"
+#ifndef BENCHMARK_WITHOUT_TYPESAFE
+			"if(pcall(getset.set) ~= false)then error('no error checked') end\n"
+#endif
 			"for i=1,times do\n"
 			"getset:set(i)\n"
 			"if(getset:get() ~= i)then\n"

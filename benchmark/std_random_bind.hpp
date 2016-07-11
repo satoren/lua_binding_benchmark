@@ -10,8 +10,10 @@ namespace benchmark
 			"local rengine=random.mt19937.new(0)\n"
 			"local udist=random.uniform_int_distribution.new(1,6)\n"
 			"if(rengine() ~= 2357136044) then error('mt19937?') end\n"
+#ifndef BENCHMARK_WITHOUT_TYPESAFE
 			"if(pcall(udist.__call,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error check
 			"if(pcall(udist.__call,rengine,rengine) ~= false)then error('no error checked') end\n"
+#endif
 			"for i=1,times do\n"
 			"local value = udist:__call(rengine)\n"//Actually below code, but __call metamethod has cost. for fair with "gen" function version.
 //			"local value = udist(rengine)\n"
@@ -24,8 +26,10 @@ namespace benchmark
 			"local rengine=random.mt19937(0)\n"
 			"local udist=random.uniform_int_distribution(1,6)\n"
 			"if(rengine:gen() ~= 2357136044) then error('mt19937?') end\n"
+#ifndef BENCHMARK_WITHOUT_TYPESAFE
 			"if(pcall(udist.gen,udist,udist) ~= false)then error('no error checked') end\n"//ouch! argument miss. error check
 			"if(pcall(udist.gen,rengine,rengine) ~= false)then error('no error checked') end\n"
+#endif
 			"for i=1,times do\n"
 			"local value = udist:gen(rengine)\n"
 			"if( value < 1 or value > 6)then\n"

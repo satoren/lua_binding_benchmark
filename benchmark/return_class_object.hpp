@@ -70,6 +70,9 @@ namespace benchmark
 		const char* lua_code =
 			"local times = " BENCHMARK_LOOP_COUNT_STR "\n"
 			"obj = object_function()\n"
+#ifndef BENCHMARK_WITHOUT_TYPESAFE
+			"if(pcall(obj.set) ~= false)then error('no error checked') end\n"//type error detect check.
+#endif
 			"obj:set(3)\n"
 			"if(obj:get() ~= 3)then\n"
 			"  error('error')\n"

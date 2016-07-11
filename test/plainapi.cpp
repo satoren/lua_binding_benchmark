@@ -6,14 +6,9 @@ extern "C" {
 
 #include "benchmark/benchmark.hpp"
 
-#ifdef WITHOUT_TYPESAFE
-BENCHMARK_DEFINE_LIBRARY_NAME("plain api(*1)")
-#else
 BENCHMARK_DEFINE_LIBRARY_NAME("plain api")
-#endif
 
-
-#ifdef WITHOUT_TYPESAFE
+#ifdef BENCHMARK_WITHOUT_TYPESAFE
 #define check_userdata(L, INDEX, NAME) lua_touserdata(L, INDEX)
 #define check_integer(L, INDEX) lua_tointeger(L, INDEX)
 #define check_string(L, INDEX) lua_tostring(L, INDEX)
@@ -333,8 +328,6 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_BEGIN
 RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 
 
-
-#ifndef WITHOUT_TYPESAFE
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 #define STD_MT19937_NAME "std.mt19937"
@@ -435,4 +428,3 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	lua_close(L);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
-#endif

@@ -11,7 +11,7 @@ extern "C" {
 
 #include "benchmark/benchmark.hpp"
 
-BENCHMARK_DEFINE_LIBRARY_NAME("luacppinterface(*1)")
+BENCHMARK_DEFINE_LIBRARY_NAME("luacppinterface")
 
 
 namespace

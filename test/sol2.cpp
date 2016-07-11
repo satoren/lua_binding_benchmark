@@ -64,20 +64,20 @@ RETURN_CLASS_OBJECT_BENCHMARK_FUNCTION_END
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 {
 	typedef std::uniform_int_distribution<int> uni_int_dist;
-	
+
 	sol::state lua;
 	lua.open_libraries(sol::lib::base);
-	
+
 	sol::table random = lua.create_named_table("random");
-	
+
 	random.new_usertype<std::mt19937,int>("mt19937",
-		"__call", sol::protect(&std::mt19937::operator())
+		"__call",&std::mt19937::operator()
 	);
 
 	random.new_usertype<uni_int_dist, int,int>("uniform_int_distribution",
-		"__call", sol::protect([](uni_int_dist& dist, std::mt19937& gen) {return dist(gen); })
+		"__call", [](uni_int_dist& dist, std::mt19937& gen) {return dist(gen);}
 	);
-	
+
 	lua.script(lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END

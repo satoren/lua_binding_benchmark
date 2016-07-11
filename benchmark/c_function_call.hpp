@@ -15,6 +15,9 @@ namespace benchmark
 
 
 		const char* lua_code = "local times = " BENCHMARK_LOOP_COUNT_STR "\n"
+#ifndef BENCHMARK_WITHOUT_TYPESAFE
+			"if(pcall(native_function,'abc') ~= false)then error('no error checked') end\n"//type error detect check.
+#endif
 			"for i=1,times do\n"
 			"local r = native_function(i)\n"
 			"if(r ~= i)then\n"
