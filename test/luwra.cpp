@@ -17,6 +17,7 @@ GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
+	state.loadStandardLibrary();
 	state.runString(reg_table_lua_code);
 
 	benchmark_exec(state);
@@ -26,6 +27,7 @@ TABLE_CHAIN_BENCHMARK_FUNCTION_END
 C_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
+	state.loadStandardLibrary();
 
 	state["native_function"] = LUWRA_WRAP(native_function);
 	state.runString(lua_code);
@@ -36,6 +38,7 @@ C_FUNCTION_CALL_BENCHMARK_FUNCTION_END
 LUA_FUNCTION_CALL_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
+	state.loadStandardLibrary();
 	state.runString(register_lua_function_code);
 
 	luwra::Function<std::string> func = state[lua_function_name];
