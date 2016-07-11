@@ -85,7 +85,7 @@ TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	Lua lua;
 	LuaTable global = lua.GetGlobalEnvironment();
-	lua.RunScript("t1={t2={t3={}}}");
+	lua.RunScript(reg_table_lua_code);
 	LuaTableWrap tablewrap(global);
 	benchmark_exec(tablewrap);
 }

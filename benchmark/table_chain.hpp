@@ -18,6 +18,7 @@ namespace benchmark
 				if (v != i) { throw std::logic_error(""); }
 			}
 		}
+		const char* reg_table_lua_code = "t1={t2={t3={}}}";
 	}
 }
 

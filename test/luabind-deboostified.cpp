@@ -43,7 +43,7 @@ TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 	{
 		using namespace luabind;
 		open(L);
-		luaL_dostring(L, "t1={t2={t3={}}}");
+		luaL_dostring(L, reg_table_lua_code);
 		auto globaltable = globals(L);
 		benchmark_exec(globaltable);
 	}

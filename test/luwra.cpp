@@ -17,7 +17,7 @@ GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	luwra::StateWrapper state;
-	state.runString("t1={t2={t3={}}}");
+	state.runString(reg_table_lua_code);
 
 	benchmark_exec(state);
 }

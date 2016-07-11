@@ -160,7 +160,7 @@ TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
 	{
-		luaL_dostring(state, "t1={t2={t3={}}}");
+		luaL_dostring(state, reg_table_lua_code);
 		TableChain t(state);
 		benchmark_exec(t);
 	}

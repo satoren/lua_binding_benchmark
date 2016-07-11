@@ -57,7 +57,7 @@ TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 	lua_State *state = luaL_newstate(); luaL_openlibs(state);
 	{
 		LuaTableWrap table(LuaIntf::LuaRef(state, "_G"));
-		luaL_dostring(state, "t1={t2={t3={}}}");
+		luaL_dostring(state, reg_table_lua_code);
 		benchmark_exec(table);
 	}
 	lua_close(state);

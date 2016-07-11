@@ -82,7 +82,7 @@ GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	sol::state state;
-	state.script("t1={t2={t3={}}}");
+	state.script(reg_table_lua_code);
 	TableWrap table(state);
 	benchmark_exec(table);
 }

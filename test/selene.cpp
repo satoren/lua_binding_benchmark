@@ -15,7 +15,7 @@ GLOBAL_TABLE_BENCHMARK_FUNCTION_END
 TABLE_CHAIN_BENCHMARK_FUNCTION_BEGIN
 {
 	sel::State state(true);
-	state("t1={t2={t3={}}}");
+	state(reg_table_lua_code);
 	benchmark_exec(state);
 }
 TABLE_CHAIN_BENCHMARK_FUNCTION_END
