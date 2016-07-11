@@ -1,5 +1,9 @@
 #pragma once
 
+extern "C" {
+#include <lua.h>
+}
+
 #include "benchmark_runner.hpp"
 
 //benchmark types
@@ -50,7 +54,7 @@ int main(int argc, const char* argv[])
 	if (bin_name.find("output_csv_title") != std::string::npos)
 	{
 		file_and_std_ostream out(std::string("result.csv"), std::ios::out | std::ios::binary);
-		out << "Library + " LUA_VERSION;
+		out << "Library + " LUA_RELEASE;
 		for (auto name : tests)
 		{
 			out << "," << name;

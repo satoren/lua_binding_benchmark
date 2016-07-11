@@ -1,3 +1,7 @@
+#include "benchmark/benchmark.hpp"
+
+#if LUA_VERSION_NUM >= 502
+
 #include <functional>
 #include <iostream>
 
@@ -7,9 +11,15 @@ extern "C" {
 #include <lualib.h>
 }
 
+
+#include <luacoroutine.cpp>
+#include <luareference.cpp>
+#include <luacppinterface.cpp>
+#include <luatable.cpp>
+#include <luafunction.cpp>
+
 #include <luacppinterface.h>
 
-#include "benchmark/benchmark.hpp"
 
 BENCHMARK_DEFINE_LIBRARY_NAME("luacppinterface")
 
@@ -194,3 +204,5 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
 //*/
+
+#endif// LUA_VERSION_NUM >= 502

@@ -7,6 +7,10 @@ link_directories(${LUA_LIBRARY_DIRS})
 include_directories(${LUA_INCLUDE_DIRS})
 include_directories("./")
 
+if(NOT RESULT_OUTPUT_DIR)
+	set(RESULT_OUTPUT_DIR result)
+endif(NOT RESULT_OUTPUT_DIR)
+
 if(NOT MSVC)
 add_definitions("-std=c++1y")
 endif(NOT MSVC)
@@ -80,14 +84,8 @@ option(DISABLE_LUACPPINTERFACE OFF)
 # use compat flags to make it build with lua 5.3.4
 if(NOT DISABLE_LUACPPINTERFACE)
 #luacppinterface's cmakelist is bad
-set(LUACPPINTERFACESRC
-	binding_libs/luacppinterface/LuaCppInterface/luacoroutine.cpp
-	binding_libs/luacppinterface/LuaCppInterface/luareference.cpp
-	binding_libs/luacppinterface/LuaCppInterface/luacppinterface.cpp
-	binding_libs/luacppinterface/LuaCppInterface/luatable.cpp
-	binding_libs/luacppinterface/LuaCppInterface/luafunction.cpp)
 #add_subdirectory(binding_libs/luacppinterface)
-add_executable(benchmark_luacppinterface ${LUACPPINTERFACESRC} test/luacppinterface.cpp)
+add_executable(benchmark_luacppinterface test/luacppinterface.cpp)
 target_include_directories(benchmark_luacppinterface PRIVATE binding_libs/luacppinterface/LuaCppInterface)
 target_compile_definitions(benchmark_luacppinterface PRIVATE -DLUA_COMPAT_APIINTCASTS -DBENCHMARK_WITHOUT_TYPESAFE)
 target_link_libraries(benchmark_luacppinterface ${LUA_LIBRARIES})
@@ -96,26 +94,28 @@ set(LIBRARY_DIRS ${LIBRARY_DIRS} binding_libs/luacppinterface/)
 
 endif(NOT DISABLE_LUACPPINTERFACE)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${RESULT_OUTPUT_DIR})
+
 add_custom_target(execute_benchmark DEPENDS ${BENCHMARK_BINARIES})
 foreach(BENCHMARK_BINARY ${BENCHMARK_BINARIES})
 add_custom_command(TARGET execute_benchmark POST_BUILD COMMAND ${BENCHMARK_BINARY})
 endforeach(BENCHMARK_BINARY)
 add_custom_command(TARGET execute_benchmark POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/result/result.csv)
+COMMAND ${CMAKE_COMMAND} -E copy result.csv ${CMAKE_CURRENT_SOURCE_DIR}/${RESULT_OUTPUT_DIR}/result.csv)
 
 
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 
 add_custom_command(TARGET execute_benchmark POST_BUILD
-          COMMAND bash system_info_dump.linux.sh > result/system_info.txt
+          COMMAND bash system_info_dump.linux.sh > ${RESULT_OUTPUT_DIR}/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 else()
 
 add_custom_command(TARGET execute_benchmark POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E echo "" > result/system_info.txt
+          COMMAND ${CMAKE_COMMAND} -E echo "" > ${RESULT_OUTPUT_DIR}/system_info.txt
 	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 add_custom_command(TARGET execute_benchmark POST_BUILD
-          COMMAND lua library_info_dump.lua ${LIBRARY_DIRS} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+          COMMAND lua library_info_dump.lua ${LIBRARY_DIRS} > ${RESULT_OUTPUT_DIR}/library_info.txt WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

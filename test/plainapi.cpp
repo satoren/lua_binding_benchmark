@@ -91,7 +91,11 @@ struct TableChain
 	{
 		if (current_key == 0)
 		{
+#if LUA_VERSION_NUM >= 502
 			lua_pushglobaltable(state_);
+#else
+			lua_pushvalue(state_, LUA_GLOBALSINDEX);
+#endif
 		}
 		else
 		{

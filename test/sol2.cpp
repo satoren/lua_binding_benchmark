@@ -1,6 +1,7 @@
-#include "sol.hpp"
-
 #include "benchmark/benchmark.hpp"
+#if LUA_VERSION_NUM >= 502
+
+#include "sol.hpp"
 
 BENCHMARK_DEFINE_LIBRARY_NAME("sol2")
 
@@ -81,3 +82,5 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	lua.script(lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+
+#endif// LUA_VERSION_NUM >= 502

@@ -1,6 +1,7 @@
-#include "selene.h"
 #include "benchmark/benchmark.hpp"
 
+#if LUA_VERSION_NUM >= 502
+#include "selene.h"
 
 BENCHMARK_DEFINE_LIBRARY_NAME("Selene")
 
@@ -87,3 +88,5 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 	state(lua_code);
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
+
+#endif// LUA_VERSION_NUM >= 502

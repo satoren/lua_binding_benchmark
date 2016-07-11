@@ -1,9 +1,11 @@
+#include "benchmark/benchmark.hpp"
+#if LUA_VERSION_NUM >= 502
+
 #if LUA_VERSION_NUM > 502
 #define lua_tounsigned lua_tointeger
 #endif
 #include "sol.hpp"
 
-#include "benchmark/benchmark.hpp"
 
 BENCHMARK_DEFINE_LIBRARY_NAME("sol")
 
@@ -156,3 +158,5 @@ STD_RANDOM_BIND_BENCHMARK_FUNCTION_BEGIN
 }
 STD_RANDOM_BIND_BENCHMARK_FUNCTION_END
 */
+
+#endif// LUA_VERSION_NUM >= 502
