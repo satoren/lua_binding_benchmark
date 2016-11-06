@@ -39,31 +39,28 @@ namespace benchmark
 	public:
 		struct result
 		{
-			static const int TRY_COUNT = 10;
-
-			void put(uint32_t time)
+			void put(int32_t t)
 			{
-				assert(times_count < TRY_COUNT);
-				times[times_count++] = time;
-				if (executed())
-				{
-					std::sort(times, times + TRY_COUNT);
-				}
+				times.push_back(t);
+				std::sort(times.begin(), times.end());
 			}
 
-			uint32_t time(int index = 0)const
+			int32_t time(int index = 0)const
 			{
 				return times[index];
 			}
 
-			result() :times_count(0) {}
-			bool executed()const
+			int32_t best_time()const
 			{
-				return times_count == TRY_COUNT;
+				return times.empty()?-1:times[0];
+			}
+			result(){}
+			bool empty()const
+			{
+				return times.empty();
 			}
 		private:
-			uint32_t times[TRY_COUNT];
-			size_t times_count;
+			std::vector<int32_t> times;
 		};
 		static BenchmarkRunner& instance()
 		{
@@ -77,11 +74,11 @@ namespace benchmark
 		}
 		void set_title(std::string t) { title_.swap(t); }
 
-		result execute(FunctionType f)const
+		result execute(FunctionType f,int try_count)const
 		{
 			result res = {};
 
-			for (int i = 0; i < result::TRY_COUNT; ++i)
+			for (int i = 0; i < try_count; ++i)
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -95,14 +92,30 @@ namespace benchmark
 			}
 			return res;
 		}
-		result execute(const std::string& name)const
+		result execute(const std::string& name,int try_count)const
 		{
 			FunctionMapType::const_iterator it = functions_.find(name);
 			if (it != functions_.end())
 			{
-				return execute(it->second);
+				return execute(it->second,try_count);
 			}
 			return result();
+		}
+		int32_t one_shot(const std::string& name)const
+		{
+			FunctionMapType::const_iterator it = functions_.find(name);
+			if (it != functions_.end())
+			{
+				return execute(it->second,1).best_time();
+			}
+			return -1;
+		}
+		static int32_t one_shot_s(const std::string& name)
+		{
+			return instance().one_shot(name);
+		}
+		static std::string title_s() {
+			return instance().title_;
 		}
 
 		template<typename outtype>
@@ -114,9 +127,9 @@ namespace benchmark
 #endif
 			for (auto name : tests)
 			{
-				result result = execute(name);
+				result result = execute(name,10);
 				out << ",";
-				if (result.executed())
+				if (!result.empty())
 				{
 					out << result.time();
 				}

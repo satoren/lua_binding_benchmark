@@ -15,6 +15,12 @@ if(NOT MSVC)
 add_definitions("-std=c++1y")
 endif(NOT MSVC)
 
+
+if(EMSCRIPTEN)
+  include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include/")
+  set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "--bind --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/emprefix.js --post-js ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/empostfix.js -s DEMANGLE_SUPPORT=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=0")
+endif(EMSCRIPTEN)
+
 set(BENCHMARK_BINARIES "")
 set(LIBRARY_DIRS "")
 
