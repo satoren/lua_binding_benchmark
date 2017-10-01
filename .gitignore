@@ -3,3 +3,5 @@ lua-5*
 *.exe
 *.dll
 LuaJIT-*
+.dropbox
+desktop.ini
