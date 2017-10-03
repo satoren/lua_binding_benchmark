@@ -1,0 +1,8 @@
+Selene,0.1-187-g1b6b3ff,1b6b3ff9ecea0e5ef0df1dfbdb03028d2264ff20,https://github.com/jeremyong/Selene.git
+kaguya,v1.3.0-65-g2682080,2682080330e638c9b1dc1de3589c01d246e1b507,https://github.com/satoren/kaguya.git
+lua-intf,d6f17a8,d6f17a8a474814d337e1dd867238e1d5ba1b7e5c,https://github.com/SteveKChiu/lua-intf.git
+luabind-deboostified,v0.9-251-g6631a38,6631a385c1286b13aa496f739266685ddb1aff18,https://github.com/Wohlhabend-Networks/luabind-deboostified.git
+luacppinterface,v1.2-1-gddac652,ddac652e0091a90484b25cbfe283d805624bb549,https://github.com/davidsiaw/luacppinterface.git
+luwra,0.4.3-15-ga99b4ae,a99b4aee3f1d1167675157d3ebe004f6e9398fda,https://github.com/vapourismo/luwra.git
+sol,v1.1.0-87-ga5e24b4,a5e24b4fa2ef13eaee0647e230c69956d615ce86,https://github.com/Rapptz/sol.git
+sol2,v2.8.9-19-g4634ec4,4634ec4cc3a89bf35ef093e5f62a5c6297cbb93b,https://github.com/ThePhD/sol2.git

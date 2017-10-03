@@ -1,16 +1,15 @@
 ----system info---
-Linux ubuntu 4.4.0-22-generic #40-Ubuntu SMP Thu May 12 22:03:46 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+Linux testing-docker-b541b170-57ed-40f5-a0f5-e8b037004184 4.11.6-041106-generic #201706170517 SMP Sat Jun 17 09:18:46 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 
 ----cpu info---
 vendor_id	: GenuineIntel
-model name	: Intel(R) Core(TM) i5-4460  CPU @ 3.20GHz
-cpu MHz		: 3192.608
+model name	: Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz
+cpu MHz		: 2793.281
 
 ----high resolution timer---
-  .resolution: 1 nsecs
 
 ----compiler version---
-c++ (Ubuntu 5.3.1-14ubuntu2) 5.3.1 20160413
+g++-4.9 (Ubuntu 4.9.4-2ubuntu1~14.04.1) 4.9.4
 Copyright (C) 2015 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
